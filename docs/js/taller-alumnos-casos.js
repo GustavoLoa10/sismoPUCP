@@ -120,22 +120,6 @@ const TALLER_CASOS=[
         "orden": 1
       },
       {
-        "id": "T10:foto:2",
-        "caseId": "T10",
-        "tipo": "incluida",
-        "origen": "aportada",
-        "media": "panorama",
-        "projection": "dual-fisheye",
-        "src": "data/taller/practicas-guiadas/T10-2-src.jpg",
-        "poster": "data/taller/practicas-guiadas/T10-2-poster.jpg",
-        "titulo": "Vista 360° · 074 · Interior A · vanos y encuentros",
-        "descripcion": "DNG de Insta360 X4 Air revelado a JPEG. Dos lentes ojo de pez; exploración aproximada, sin cosido calibrado. Interior A · vanos y encuentros",
-        "autor": "Archivo aportado para Equipo PUCP",
-        "fecha": "23/07/2026",
-        "licencia": "Uso en el taller; no se ha declarado licencia de redistribución",
-        "orden": 2
-      },
-      {
         "id": "T10:foto:3",
         "caseId": "T10",
         "tipo": "incluida",
@@ -203,18 +187,14 @@ const TALLER_CASOS=[
       ],
       [
         "F3",
-        "Vista 360° · 074 · Interior A · vanos y encuentros · DNG de Insta360 X4 Air revelado a JPEG. Dos lentes ojo de pez; exploración aproximada, sin cosido calibrado. Interior A · vanos y encuentros"
-      ],
-      [
-        "F4",
         "Vista 360° · 075 · Interior A · detalle de paños · DNG de Insta360 X4 Air revelado a JPEG. Dos lentes ojo de pez; exploración aproximada, sin cosido calibrado. Interior A · detalle de paños"
       ],
       [
-        "F5",
+        "F4",
         "Vista 360° · 078 · Exterior B · edificio y escombros · DNG de Insta360 X4 Air revelado a JPEG. Dos lentes ojo de pez; exploración aproximada, sin cosido calibrado. Exterior B · edificio y escombros"
       ],
       [
-        "F6",
+        "F5",
         "Vista 360° · 080 · Interior B · materiales desprendidos · DNG de Insta360 X4 Air revelado a JPEG. Dos lentes ojo de pez; exploración aproximada, sin cosido calibrado. Interior B · materiales desprendidos"
       ]
     ],
@@ -896,6 +876,19 @@ const TALLER_CASOS=[
         "fecha": "23/04/2016 · captura EXIF",
         "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada",
         "orden": 3
+      },
+      {
+        "id": "T05:gustavo-loa",
+        "caseId": "T05",
+        "tipo": "incluida",
+        "origen": "aportada",
+        "src": "data/taller/practicas-guiadas/ejercicio-09-gustavo-loa.jpg",
+        "titulo": "Registro de inspección · Gustavo Loa Canales",
+        "descripcion": "Fotografía aportada por Gustavo Loa Canales para este ejercicio. Vista del interior, columna, cerramientos e instalaciones; registre su evaluación a partir de lo observable.",
+        "autor": "Ing. Gustavo Loa Canales, PhD",
+        "licencia": "Fotografía aportada por el autor para uso académico en este taller",
+        "fecha": "Fecha de captura no documentada",
+        "orden": 4
       }
     ],
     "fuentes": [
@@ -928,6 +921,10 @@ const TALLER_CASOS=[
       [
         "F4",
         "Detalle de fachada abierta · Encuentro de componentes de concreto, cerramientos y elementos suspendidos visibles."
+      ],
+      [
+        "F-G",
+        "Registro adicional aportado: vista del interior, columna, cerramientos e instalaciones."
       ]
     ],
     "preguntas": [
