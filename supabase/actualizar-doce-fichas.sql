@@ -1,36 +1,5 @@
--- Ejecutar una vez en Supabase > SQL Editor. No contiene contraseñas.
+-- Actualiza únicamente la función de recepción; conserva sesiones y respuestas existentes.
 begin;
-create table if not exists public.taller_docentes (
- user_id uuid primary key references auth.users(id) on delete cascade
-);
-create table if not exists public.taller_sesiones (
- id uuid primary key default gen_random_uuid(),
- nombre text not null check (char_length(nombre) between 1 and 120),
- codigo text not null unique check (char_length(codigo) between 8 and 40),
- activa boolean not null default true,
- creada_en timestamptz not null default now()
-);
-create table if not exists public.taller_entregas (
- id uuid primary key,
- sesion_id uuid not null references public.taller_sesiones(id),
- recibida_en timestamptz not null default now(),
- participante jsonb not null,
- respuestas jsonb not null,
- constraint participante_objeto check (jsonb_typeof(participante)='object'),
- constraint respuestas_lista check (jsonb_typeof(respuestas)='array')
-);
-alter table public.taller_docentes enable row level security;
-alter table public.taller_sesiones enable row level security;
-alter table public.taller_entregas enable row level security;
-revoke all on public.taller_docentes,public.taller_sesiones,public.taller_entregas from anon,authenticated;
-grant select on public.taller_docentes,public.taller_entregas to authenticated;
-grant select,insert,update on public.taller_sesiones to authenticated;
-drop policy if exists docente_propio on public.taller_docentes;
-create policy docente_propio on public.taller_docentes for select to authenticated using (user_id=(select auth.uid()));
-drop policy if exists docente_entregas on public.taller_entregas;
-create policy docente_entregas on public.taller_entregas for select to authenticated using (exists(select 1 from public.taller_docentes where user_id=(select auth.uid())));
-drop policy if exists docente_sesiones on public.taller_sesiones;
-create policy docente_sesiones on public.taller_sesiones for all to authenticated using (exists(select 1 from public.taller_docentes where user_id=(select auth.uid()))) with check (exists(select 1 from public.taller_docentes where user_id=(select auth.uid())));
 create or replace function public.enviar_taller(p_id uuid,p_codigo text,p_participante jsonb,p_respuestas jsonb)
 returns jsonb language plpgsql security definer set search_path='' as $$
 declare v_sesion uuid; v_fila public.taller_entregas%rowtype; r jsonb; v_n integer;
@@ -55,7 +24,4 @@ end;
 $$;
 revoke all on function public.enviar_taller(uuid,text,jsonb,jsonb) from public,anon,authenticated;
 grant execute on function public.enviar_taller(uuid,text,jsonb,jsonb) to anon,authenticated;
-insert into public.taller_sesiones(nombre,codigo) select 'Taller sismoPUCP',upper(substr(replace(gen_random_uuid()::text,'-',''),1,10)) where not exists(select 1 from public.taller_sesiones);
 commit;
--- Guarda este código y compártelo con los alumnos del taller.
-select nombre,codigo,activa from public.taller_sesiones order by creada_en;

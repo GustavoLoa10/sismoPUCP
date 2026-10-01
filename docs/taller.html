@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>sismoPUCP · Taller de daños</title>
   <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/taller.css">
+  <link rel="stylesheet" href="css/taller.css?v=doce-1">
   <link rel="stylesheet" href="css/taller-media.css">
-</head>
+<link rel="stylesheet" href="css/marca-pucp.css?v=marca-1"></head>
 <body class="taller">
   <header class="taller-header">
-    <div><a href="index.html">sismoPUCP</a><h1>Taller de evaluación de daños</h1><p>Observar · interpretar · fundamentar</p></div>
+    <div><a class="pucp-brand" href="index.html" aria-label="PUCP · inicio del taller"><img src="data/marca/logo-pucp.png" width="224" height="74" alt="Pontificia Universidad Católica del Perú"></a><h1>Taller de evaluación de daños</h1><p>Observar · interpretar · fundamentar</p></div>
     <span class="training-badge">ENTRENAMIENTO · CASOS REALES Y SIMULACIONES</span>
   </header>
   <main class="taller-main">
@@ -26,8 +26,8 @@
   </div>
   <span id="profileStatus" role="status" aria-live="polite"></span>
  </section>
- <nav class="ruta-taller participant-route" aria-label="Elegir una de las ocho fichas">
-  <div class="ruta-resumen sr-only"><b id="progressText">0 de 8 completados</b></div>
+ <nav class="ruta-taller participant-route" aria-label="Elegir una de las doce fichas">
+  <div class="ruta-resumen sr-only"><b id="progressText">0 de 12 completados</b></div>
   <div id="caseChips" class="casos-chips" aria-label="Progreso de casos"></div>
   <button id="btnResumen" aria-expanded="false">Resumen</button>
  </nav>
@@ -46,7 +46,7 @@
     </section>
     <div class="entrega-alumnos entrega-final"><button id="btnSendDelivery" type="button">ENVIAR AL EQUIPO DOCENTE</button><p id="deliveryStatus" role="status" aria-live="polite" hidden></p></div>
     <section id="resumenTaller" class="taller-resumen" hidden></section>
-  </main>
+  <footer class="academic-footer"><strong>Taller: Evaluación rápida de daños en edificios por sismo</strong><p>Ing. Gustavo Loa Canales, PhD <span aria-hidden="true">·</span> Ing. Sandra Santa Cruz, PhD</p><small>© 2026 Gustavo Loa Canales y Sandra Santa Cruz · Material académico del taller.<br>Fotografías y fuentes: créditos en cada expediente.</small></footer></main>
 
 <dialog id="confirmDelivery" class="confirm-delivery" aria-labelledby="confirmDeliveryTitle">
  <h2 id="confirmDeliveryTitle">¿Estás seguro de enviar tus respuestas al equipo docente?</h2>
@@ -76,8 +76,8 @@
   <script>globalThis.SISMO_TALLER=true;</script>
   <script src="js/util.js"></script><script src="js/config.js"></script><script src="js/storage.js"></script><script src="js/dano-model.js"></script><script src="js/ficha-dano.js"></script><script src="js/reportes.js"></script>
   <script src="js/guia-grados.js"></script>
-  <script src="js/taller-alumnos-casos.js"></script>
-  <script src="js/taller-recorridos.js"></script><script src="js/taller-360.js"></script><script src="js/taller.js"></script>
-  <script src="js/entregas-config.js"></script><script src="js/entregas.js"></script>
+  <script src="js/catalogo-taller.js?v=doce-1"></script><script src="js/taller-alumnos-casos.js?v=doce-1"></script>
+  <script src="js/taller-recorridos.js"></script><script src="js/taller-360.js"></script><script src="js/taller.js?v=doce-1"></script>
+  <script src="js/entregas-config.js"></script><script src="js/entregas.js?v=doce-1"></script>
 </body>
 </html>

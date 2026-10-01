@@ -162,3 +162,6 @@ body.taller{height:auto;overflow:auto;background:#edf2f5;color:#213744;font:15px
 
 /* Etiqueta y control comparten fila cuando la ficha tiene espacio. */
 .taller-form{container-type:inline-size}.taller .field-inline{display:grid;grid-template-columns:minmax(120px,34%) minmax(0,1fr);align-items:center;gap:10px;margin:12px 0}.taller .field-inline>label{margin:0;line-height:1.35}.taller .field-inline select,.taller .field-inline input{margin:0;min-width:0;max-width:100%;text-align:left}.identification-grid{display:grid;grid-template-columns:1fr;gap:0}.taller .system-guide-control{min-width:0}.taller .ficha-v2 h3{margin:20px 0 12px}.taller .ficha-v2>h3:first-of-type{margin-top:0}@container(min-width:800px){.identification-grid{grid-template-columns:.8fr 1.2fr;gap:18px}.identification-grid .field-inline{grid-template-columns:100px minmax(0,1fr)}}@container(max-width:380px){.taller .field-inline{grid-template-columns:1fr;gap:5px;margin:10px 0}.taller .field-inline>label{font-size:12px}}
+
+/* Doce fichas, con desplazamiento horizontal en pantallas pequeñas. */
+.participant-route .casos-chips{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:5px;scrollbar-width:thin}.participant-route .caso-chip{flex:1 0 42px;min-width:42px}.participant-route{min-width:0}.participant-route .casos-chips{min-width:0}

@@ -1,18 +1,18 @@
-const TITULOS_ESTADISTICA={T01:'Vivienda de tierra · Chupaca',T02:'Edificio Tarqui · Fachada',T03:'Edificio residencial · Maracay',T04:'Torre de iglesia · Valencia',T05:'Hospital IES · Ecuador',T06:'Edificio Alto Arauco · Maule',T07:'Patio Mayor',T08:'Fachada y acceso · Ciudad de México'};
+const TITULOS_ESTADISTICA=Object.fromEntries(CATALOGO_TALLER.map(c=>[c.id,c.titulo]));
 // Estadísticas a partir de las entregas autorizadas; nunca consulta datos públicos.
 function resumirEntregas(lista){
  const alumnos=new Map(),respuestas=new Map(),orden=[...lista].sort((a,b)=>String(b.recibida_en).localeCompare(String(a.recibida_en))||String(b.id).localeCompare(String(a.id)));
  for(const entrega of orden){const p=entrega.participante||{},identidad=p.codigoPUCP?String(p.codigoPUCP).trim().toUpperCase():[p.nombre,p.institucion,p.equipo].map(x=>String(x||'').trim().toLowerCase()).join('|'),alumno=entrega.sesion_id+':'+identidad;
   if(!alumnos.has(alumno))alumnos.set(alumno,{nombre:p.nombre,codigoPUCP:p.codigoPUCP,casos:new Set()});
-  for(const r of entrega.respuestas||[]){if(!/^T0[1-8]$/.test(r.caso))continue;alumnos.get(alumno).casos.add(r.caso);const key=alumno+':'+r.caso;if(!respuestas.has(key))respuestas.set(key,{alumno,caso:r.caso,evaluacion:r.evaluacion||{}})}
+  for(const r of entrega.respuestas||[]){if(!CATALOGO_TALLER.some(c=>c.id===r.caso))continue;alumnos.get(alumno).casos.add(r.caso);const key=alumno+':'+r.caso;if(!respuestas.has(key))respuestas.set(key,{alumno,caso:r.caso,evaluacion:r.evaluacion||{}})}
  }
- const casos=Array.from({length:8},(_,i)=>{const caso='T'+String(i+1).padStart(2,'0'),filas=[...respuestas.values()].filter(r=>r.caso===caso),decisiones={habitable:0,uso_restringido:0,inseguro:0};for(const r of filas)if(r.evaluacion.habitabilidad in decisiones)decisiones[r.evaluacion.habitabilidad]++;return {caso,total:filas.length,decisiones,filas}});
- return {alumnos:alumnos.size,completos:[...alumnos.values()].filter(a=>a.casos.size===8).length,totalRespuestas:respuestas.size,entregas:lista.length,casos};
+ const casos=CATALOGO_TALLER.map(({id:caso})=>{const filas=[...respuestas.values()].filter(r=>r.caso===caso),decisiones={habitable:0,uso_restringido:0,inseguro:0};for(const r of filas)if(r.evaluacion.habitabilidad in decisiones)decisiones[r.evaluacion.habitabilidad]++;return {caso,total:filas.length,decisiones,filas}});
+ return {alumnos:alumnos.size,completos:[...alumnos.values()].filter(a=>a.casos.size===CATALOGO_TALLER.length).length,totalRespuestas:respuestas.size,entregas:lista.length,casos};
 }
 function estadisticasHTML(lista){const r=resumirEntregas(lista),celda=(n,total)=>total?n+' ('+(100*n/total).toFixed(1)+'%)':'—';
- q('statsSummary').innerHTML='<div><strong>'+r.alumnos+'</strong><span>Participantes con entregas</span></div><div><strong>'+r.completos+'</strong><span>Participantes con las 8 fichas</span></div><div><strong>'+r.totalRespuestas+'</strong><span>Respuestas únicas · '+r.entregas+' envíos en el historial</span></div>';
- q('statsCases').innerHTML=r.casos.map(c=>'<tr><td>'+safe(c.caso)+'</td><td>'+c.total+'</td>'+['habitable','uso_restringido','inseguro'].map(k=>'<td>'+celda(c.decisiones[k],c.total)+'<div class="stat-bar"><i style="width:'+(c.total?100*c.decisiones[k]/c.total:0)+'%"></i></div></td>').join('')+'</tr>').join('');
- const elegido=q('statsCaseFilter').value||'T01';q('statsCaseFilter').innerHTML=r.casos.map(c=>'<option value="'+c.caso+'">'+c.caso+' · '+safe(TITULOS_ESTADISTICA[c.caso])+' · '+c.total+' respuestas</option>').join('');q('statsCaseFilter').value=elegido;
+ q('statsSummary').innerHTML='<div><strong>'+r.alumnos+'</strong><span>Participantes con entregas</span></div><div><strong>'+r.completos+'</strong><span>Participantes con las 12 fichas</span></div><div><strong>'+r.totalRespuestas+'</strong><span>Respuestas únicas · '+r.entregas+' envíos en el historial</span></div>';
+ q('statsCases').innerHTML=r.casos.map(c=>'<tr><td>'+safe(etiquetaCasoTaller(c.caso))+'</td><td>'+c.total+'</td>'+['habitable','uso_restringido','inseguro'].map(k=>'<td>'+celda(c.decisiones[k],c.total)+'<div class="stat-bar"><i style="width:'+(c.total?100*c.decisiones[k]/c.total:0)+'%"></i></div></td>').join('')+'</tr>').join('');
+ const elegido=q('statsCaseFilter').value||CATALOGO_TALLER[0].id;q('statsCaseFilter').innerHTML=r.casos.map(c=>'<option value="'+c.caso+'">'+etiquetaCasoTaller(c.caso)+' · '+safe(TITULOS_ESTADISTICA[c.caso])+' · '+c.total+' respuestas</option>').join('');q('statsCaseFilter').value=elegido;
  q('statsCaseFilter').onchange=()=>pintarDanosEstadistica(r,q('statsCaseFilter').value);pintarDanosEstadistica(r,elegido);
  q('statsNote').textContent='Porcentajes calculados sobre las respuestas recibidas para cada ficha. Se agrupa por Código PUCP y sesión; las entregas antiguas sin código se agrupan por nombre, institución y equipo. No se asignan notas ni se determina una respuesta correcta automáticamente.';
 }
