@@ -53,7 +53,7 @@ function danoFormHTML(f,datos=S.draft){
   <h3>5 · Grado de daño y pancarta</h3><div class="field-inline"><label for="ev_pct">Grado de daño de la edificación *</label><select id="ev_pct" required>${opts(opcionesDanoGlobalTaller(d.pct_dano),d.pct_dano)}</select></div><p id="gradePlacardStatus" class="grade-placard-status" role="status" aria-live="polite"></p><div class="habgrid" id="habGrid">${HABITABILIDAD.map(([v,t])=>`<button type="button" aria-pressed="${d.habitabilidad===v}" class="habbtn ${d.habitabilidad===v?'active':''}" data-v="${v}"><span class="dot"></span>${esc(v==='habitable'?'Uso permitido':t)}</button>`).join('')}</div>
   ${danoInput('fundamento','Fundamento de la decisión *',d.fundamento,true)}
   ${danoInput('restricciones','Áreas, accesos y usos restringidos',d.restricciones,true)}
-  
+
   <h3>6 · Medidas y revisión</h3>
   <div class="medidas-opciones"><label class="chkrow"><input type="checkbox" id="ev_barricada" ${d.barricada?'checked':''}>Requiere barricada / restricción de acceso</label>
   <label class="chkrow"><input type="checkbox" id="ev_detallada" ${d.eval_detallada?'checked':''}>Requiere evaluación detallada</label></div>
