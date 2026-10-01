@@ -39,6 +39,7 @@ async function enviarEntrega(){
   if(result.id!==envioId||!result.recibida_en||result.fichas!==data.respuestas.length)throw Error('No se recibió una confirmación válida. Puedes reintentar con el mismo identificador.');
   localStorage.setItem('sismoPUCP_recibo',JSON.stringify(result));
   mensajeEntrega('Entrega recibida: '+result.fichas+' de 8 fichas. Fecha: '+new Date(result.recibida_en).toLocaleString('es-PE',{timeZone:'America/Lima'})+'. Comprobante: '+result.id);
+  mostrarResumen();id('resumenTaller').hidden=false;id('resumenTaller').scrollIntoView({behavior:'smooth',block:'start'});
  }catch(err){mensajeEntrega('No se confirmó la entrega. '+(err.name==='TimeoutError'?'La conexión tardó demasiado. Reintenta; se conservará el mismo identificador.':err.message)+' Tus respuestas siguen guardadas en este dispositivo.');}
  finally{envioEnCurso=false;id('btnSendDelivery').disabled=false;}
 }
