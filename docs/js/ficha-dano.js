@@ -13,12 +13,12 @@ function danoOptions(escala){
 }
 function danoLegendHTML(){
   const items=[['0','Sin daño observado'],['L','Leve'],['M','Moderado'],['S','Severo'],['P/T','Parcial / total, solo donde corresponda'],['ND','No determinado']];
-  return `<aside class="dano-leyenda" aria-label="Leyenda de estados de daño"><b>Leyenda</b><div>${items.map(([c,t])=>`<span><strong>${c}</strong>${esc(t)}</span>`).join('')}</div></aside>`;
+  return `<aside class="dano-leyenda" aria-label="Leyenda de estados de daño"><div>${items.map(([c,t])=>`<span><strong>${c}</strong>${esc(t)}</span>`).join('')}</div></aside>`;
 }
 function danoInput(key,label,value,textarea=false){return `<label for="ev_${key}">${esc(label)}</label>${textarea?`<textarea id="ev_${key}">${esc(value)}</textarea>`:`<input id="ev_${key}" value="${attr(value)}">`}`}
 const SISTEMAS_RESISTENTES_DANO=['Pórticos de concreto armado','Muros de concreto armado','Sistema dual de concreto armado (pórticos y muros)','Albañilería confinada','Albañilería armada','Albañilería no reforzada','Adobe','Tapial','Mampostería de piedra','Estructura de acero','Estructura de madera','Sistema mixto','Otro sistema','No determinado'];
 function sistemaResistenteHTML(valor=''){
- const opciones=[['','Seleccionar sistema resistente'],...SISTEMAS_RESISTENTES_DANO.map(v=>[v,v])];
+ const opciones=[['','— Seleccione —'],...SISTEMAS_RESISTENTES_DANO.map(v=>[v,v])];
  if(valor&&!SISTEMAS_RESISTENTES_DANO.includes(valor))opciones.push([valor,valor]);
  return `<label for="ev_sistema_observado">Sistema resistente aparente *</label><select id="ev_sistema_observado">${opts(opciones,valor)}</select>`;
 }
@@ -36,32 +36,32 @@ function danoFormHTML(f,datos=S.draft){
   ${modoTaller?'':`<p class="ficha-intro">Observe, documente y fundamente una decisión preliminar de uso. Un rubro pendiente no significa ausencia de daño.</p>`}
   ${prev.length?`<details><summary>Evaluaciones previas (${prev.length})</summary><div id="prevEvals">${prevHTML}</div></details>`:`<div id="prevEvals" hidden></div>`}
   <div id="draftStatus" class="save-status${modoTaller?' sr-only':''}" role="status">${Storage.loadDraft(d.buildingKey)?'Borrador recuperado del dispositivo.':'Nueva evaluación. Los cambios se guardan en este dispositivo.'}</div>
-  <h3>1 · Identificar</h3><p><b>${esc(d.local_id)}</b> · ${esc(d.direccion||'Dirección no disponible')}</p>
+  <h3>1 · Identificar</h3>
 
-  <label for="ev_evento">Evento</label><select id="ev_evento">${opts([['','Sin evento'],...S.eventos.map(e=>[e.uuid,e.nombre])],d.eventoId)}</select>
-  <div class="grid2"><div><label for="ev_tipo">Tipo</label><select id="ev_tipo">${opts(TIPO_EVAL,d.tipo)}</select></div><div><label for="ev_fecha">Fecha y hora</label><input id="ev_fecha" type="datetime-local" value="${attr(d.fecha?.includes('Z')?fechaLocalDano(d.fecha):d.fecha)}"></div></div>
+  <label for="ev_evento">Evento</label><select id="ev_evento" disabled aria-readonly="true">${opts([['','Sin evento'],...S.eventos.map(e=>[e.uuid,e.nombre])],d.eventoId)}</select>
+  <div class="grid2"><div><label for="ev_tipo">Tipo</label><select id="ev_tipo" disabled aria-readonly="true">${opts(TIPO_EVAL,d.tipo)}</select></div><div><label for="ev_fecha">Fecha y hora de evaluación</label><input id="ev_fecha" type="datetime-local" value="${attr(d.fecha?.includes('Z')?fechaLocalDano(d.fecha):d.fecha)}"></div></div>
   <h3>2 · Alcance y edificio</h3>
-  <label for="ev_alcance">Áreas inspeccionadas *</label><select id="ev_alcance">${opts(ALCANCES,d.alcance)}</select>
+  <label for="ev_alcance">Áreas inspeccionadas *</label><select id="ev_alcance">${opts(ALCANCES.map(([v,t])=>[v,v?t:'— Seleccione —']),d.alcance)}</select>
   ${sistemaResistenteHTML(d.sistema_observado)}
   ${danoInput('limitaciones','Zonas no inspeccionadas, peligros de acceso e información faltante',d.limitaciones,true)}
-  <h3>3 · Observar los daños</h3><p class="mini">Pulse un estado por rubro. En la ficha rápida puede usar las siglas; la leyenda permanece visible para evitar ambigüedades.</p>${danoLegendHTML()}<div id="danoGrupos">${grupos}</div>
-  <h3>4 · Documentar e interpretar</h3><p class="mini">Añada al menos un registro por rubro con daño o peligro. El ancho de una grieta, por sí solo, no determina la severidad.</p>
-  <div id="registrosDano"></div><button id="btnAddRegistro" type="button">+ Añadir daño por elemento</button>
-  ${danoInput('metodo_detallado','Método y comprobaciones (obligatorio en evaluación detallada)',d.metodo_detallado,true)}
-  <label for="fotoInput">Fotografías</label><input id="fotoInput" type="file" accept="image/*" capture="environment" multiple><div id="photoStatus" role="status"></div><div class="evidence-photos" id="fotoThumbs"></div>
+  <h3>3 · Observar los daños</h3>${danoLegendHTML()}<div id="danoGrupos">${grupos}</div>
+  <h3>4 · Documentar e interpretar</h3>
+  <div id="registrosDano"></div><button id="btnAddRegistro" type="button" hidden>+ Añadir daño por elemento</button>
+  <details class="metodo-opcional"><summary>Método y comprobaciones adicionales (opcional)</summary>${danoInput('metodo_detallado','Descripción del método',d.metodo_detallado,true)}</details>
+  <div class="foto-carga"><label for="fotoInput">Fotografías</label><input id="fotoInput" type="file" accept="image/*" capture="environment" multiple></div><div id="photoStatus" role="status"></div><div class="evidence-photos" id="fotoThumbs"></div>
   ${danoInput('obs','Observaciones adicionales',d.observaciones,true)}
   <h3>5 · Decisión preliminar de uso</h3><div class="habgrid" id="habGrid">${HABITABILIDAD.map(([v,t])=>`<button type="button" aria-pressed="${d.habitabilidad===v}" class="habbtn ${d.habitabilidad===v?'active':''}" data-v="${v}"><span class="dot"></span>${esc(v==='habitable'?'Uso permitido':t)}</button>`).join('')}</div>
   ${danoInput('fundamento','Fundamento de la decisión *',d.fundamento,true)}
   ${danoInput('restricciones','Áreas, accesos y usos restringidos',d.restricciones,true)}
-  <label for="ev_pct">Daño global estimado (opcional)</label><select id="ev_pct">${opts(modoTaller?opcionesDanoGlobalTaller(d.pct_dano):PCT_DANO,d.pct_dano)}</select><p class="mini">No representa la capacidad resistente remanente ni decide automáticamente el uso.</p>
+  <label for="ev_pct">Daño global estimado (opcional)</label><select id="ev_pct">${opts(modoTaller?opcionesDanoGlobalTaller(d.pct_dano):PCT_DANO,d.pct_dano)}</select>
   <h3>6 · Medidas y revisión</h3>
-  <label class="chkrow"><input type="checkbox" id="ev_barricada" ${d.barricada?'checked':''}>Requiere barricada / restricción de acceso</label>
-  <label class="chkrow"><input type="checkbox" id="ev_detallada" ${d.eval_detallada?'checked':''}>Requiere evaluación detallada</label>
+  <div class="medidas-opciones"><label class="chkrow"><input type="checkbox" id="ev_barricada" ${d.barricada?'checked':''}>Requiere barricada / restricción de acceso</label>
+  <label class="chkrow"><input type="checkbox" id="ev_detallada" ${d.eval_detallada?'checked':''}>Requiere evaluación detallada</label></div>
   ${danoInput('acciones','Otras medidas y seguimiento',d.acciones_otras,true)}
-  ${danoInput('justificacion_alertas','Justificación tras revisar alertas de coherencia (si aparecen)',d.justificacion_alertas,true)}
+  <div id="coherenceField" hidden>${danoInput('justificacion_alertas','Fundamento tras revisar la alerta de coherencia',d.justificacion_alertas,true)}</div>
   <div id="validationDano" class="validation-dano" role="alert" tabindex="-1"></div>
   <div class="grid2"><button id="btnSaveEval" class="primary">Finalizar evaluación</button><button id="btnCancelEval">Descartar borrador</button></div>
-  <p class="mini">Puede dejar un borrador incompleto. Finalizar exige revisar los rubros y justificar la decisión. La ficha no asigna una categoría automáticamente.</p></div>`;
+  </div>`;
 }
 function fechaLocalDano(fecha){const d=new Date(fecha);if(Number.isNaN(d.getTime()))return '';d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)}
 function avisoBorrador(msg,error=false){const box=id('draftStatus');if(box){box.textContent=msg;box.classList.toggle('save-error',error)}}
@@ -83,9 +83,9 @@ function wireDanoForm(f){
   for(const key of ['evaluador','cip','tipo','fecha','alcance','sistema_observado','limitaciones','fundamento','restricciones','metodo_detallado','justificacion_alertas','barricada'])bind(key);
   for(const [key,prop] of [['evento','eventoId'],['pct','pct_dano'],['detallada','eval_detallada'],['acciones','acciones_otras'],['obs','observaciones']])bind(key,prop);
   id('habGrid').onclick=e=>{const b=e.target.closest('.habbtn');if(!b)return;S.draft.habitabilidad=b.dataset.v;for(const x of id('habGrid').children){x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))}saveDraftDebounced()};
-  id('danoGrupos').onclick=e=>{const b=e.target.closest('.dano-estado');if(!b)return;S.draft.danos[b.dataset.rubro]=b.dataset.v;for(const x of b.parentElement.children){const active=x===b;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))}saveDraftDebounced()};
+  id('danoGrupos').onclick=e=>{const b=e.target.closest('.dano-estado');if(!b)return;S.draft.danos[b.dataset.rubro]=b.dataset.v;if(['leve','moderado','severo','parcial','total','si'].includes(b.dataset.v)&&!S.draft.registros.some(r=>r.rubro===b.dataset.rubro)){S.draft.registros.push({...nuevoRegistroDano(),rubro:b.dataset.rubro,severidad:['leve','moderado','severo'].includes(b.dataset.v)?b.dataset.v:''});renderRegistrosDano();}for(const x of b.parentElement.children){const active=x===b;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))}saveDraftDebounced()};
   id('btnAddRegistro').onclick=()=>{S.draft.registros.push(nuevoRegistroDano());renderRegistrosDano();saveDraftDebounced()};
-  renderRegistrosDano();renderFotoThumbs();
+  renderRegistrosDano();renderFotoThumbs();id('coherenceField').hidden=!validarDano(S.draft).avisos.length;
   id('fotoInput').onchange=async e=>{
     const d=S.draft,files=[...e.target.files];d._photosLoading=(d._photosLoading||0)+files.length;
     for(const file of files){try{const dataUrl=await compressPhoto(file);d.fotos.push({uuid:uuid(),codigo:'F-'+uuid().slice(0,8),descripcion:file.name,dataUrl});await Storage.saveDraft(d.buildingKey,d)}catch(err){if(S.draft===d){id('photoStatus').textContent='No se pudo procesar o guardar '+file.name+': '+err.message;avisoBorrador('Hay fotografías pendientes de guardar. Mantenga esta pestaña abierta.',true)}}finally{d._photosLoading--}}
@@ -116,7 +116,7 @@ async function saveEval(f){
   const d=S.draft;if(d._photosLoading){alert('Espere a que terminen de guardarse las fotografías.');return}
   const anterior=evalsOf(d.buildingKey).find(e=>e.uuid===d.uuid),eraEdicion=!!anterior;
   if(eraEdicion&&!evalPuede(anterior)){alert('Esta evaluación pertenece a otro usuario. Solicite la modificación al coordinador.');return}
-  const {errores,avisos}=validarDano(d),box=id('validationDano');
+  const {errores,avisos}=validarDano(d),box=id('validationDano');id('coherenceField').hidden=!avisos.length;
   box.innerHTML=[...errores,...avisos].map(t=>`<p>${esc(t)}</p>`).join('');if(errores.length){box.focus();return}
   if(!d.eventoId&&!confirm('No hay evento asociado. ¿Finalizar de todos modos?'))return;
   const button=id('btnSaveEval');if(button.disabled)return;button.disabled=true;const form=button.closest('.ficha-v2');form.inert=true;

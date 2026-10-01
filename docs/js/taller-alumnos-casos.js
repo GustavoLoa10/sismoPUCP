@@ -8,12 +8,12 @@ const TALLER_CASOS=[
     "titulo": "Vivienda de tierra · exterior e interior · Chupaca",
     "ubicacion": "Chupaca, Junín, Perú · dirección por confirmar",
     "eventoId": "PUCP-CHUPACA-24JUL",
-    "evento": "Chupaca · sismo de julio, según el aportante",
-    "fechaEvento": "",
+    "evento": "Chupaca · 18/07/2026 · M 5.4",
+    "fechaEvento": "2026-07-18T21:24:00-05:00",
     "nivel": "PRÁCTICA 1 · archivo Equipo PUCP",
     "basal": "Vivienda de tierra según el aportante; muros de tierra aparentes, cubierta de madera y planchas metálicas. Conexiones y sistema resistente completo por verificar.",
     "lecturaVisual": "Observe exterior, vanos, muros interiores y apoyos de cubierta en las cuatro tomas.",
-    "contexto": "Lectura de fotografías aportadas; no hubo inspección presencial. No se conocen planos, materiales ensayados, condición previa, capacidad residual ni dirección exacta. Las vistas parciales no certifican el estado de otras caras o niveles. La fecha de captura no equivale a la del sismo. Captura 24/07/2026 según nombre de archivo; fecha exacta del evento no confirmada.",
+    "contexto": "Lectura de fotografías aportadas; no hubo inspección presencial. No se conocen planos, materiales ensayados, condición previa, capacidad residual ni dirección exacta. Las vistas parciales no certifican el estado de otras caras o niveles. La fecha de captura no equivale a la del sismo. Captura 24/07/2026 según nombre de archivo; sismo del 18/07/2026, identificado para este taller. Contexto sísmico: el IGP reporta M 5.4, a las 21:24 hora local (UTC−5), epicentro a 14 km al sur-suroeste de Chupaca y profundidad de 9.5 km, asociado a la reactivación de la falla Altos del Mantaro. Estos parámetros corresponden al evento regional; la ubicación exacta de esta vivienda sigue sin documentarse.",
     "recursos": [
       {
         "id": "T01:aporte:IMG_20260724_134055_00_275.jpg",
@@ -90,6 +90,12 @@ const TALLER_CASOS=[
         "titulo": "Downloads.rar · Vivienda de tierra · exterior e interior · Chupaca",
         "autor": "Equipo PUCP · aportado por el usuario",
         "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada"
+      },
+      {
+        "tipo": "Contexto sísmico · fuente oficial",
+        "titulo": "IGP · Informe Técnico N.º 021-2026: sismo de Chupaca",
+        "url": "https://sigrid.cenepred.gob.pe/sigridv3/documento/22458",
+        "autor": "Instituto Geofísico del Perú"
       }
     ],
     "evidencias": [
@@ -435,12 +441,12 @@ const TALLER_CASOS=[
     "titulo": "Hospital IES · Ecuador 2016",
     "ubicacion": "Ecuador · ciudad y dirección por confirmar",
     "eventoId": "PUCP-LOTE2-hospital-ies",
-    "evento": "Ecuador · sismo de 2016 (archivo del aportante)",
-    "fechaEvento": "",
+    "evento": "Ecuador · Pedernales · 16/04/2016 · Mw 7.8",
+    "fechaEvento": "2016-04-16T18:58:00-05:00",
     "nivel": "PRÁCTICA 5 · archivo Equipo PUCP",
     "basal": "Elementos de concreto armado aparentes y cerramientos de mampostería; función de cada elemento y configuración resistente completa por verificar.",
     "lecturaVisual": "Compare las vistas generales y los detalles; registre únicamente lo que cada fotografía permite observar.",
-    "contexto": "Archivo aportado por el usuario y agrupado por inmueble. Sin inspección presencial, planos, escala de medición ni comprobación independiente de dirección, fecha de captura o sistema completo. No se atribuyen daños a niveles y elementos ocultos. 23/04/2016 · captura EXIF.",
+    "contexto": "Archivo aportado por el usuario y agrupado por inmueble. Sin inspección presencial, planos, escala de medición ni comprobación independiente de dirección, fecha de captura o sistema completo. No se atribuyen daños a niveles y elementos ocultos. 23/04/2016 · captura EXIF. Contexto sísmico: el terremoto ocurrió el 16/04/2016 a las 18:58 hora local (UTC−5), con magnitud Mw 7.8 y epicentro frente a Pedernales, Manabí. El IG-EPN reportó inicialmente una profundidad de 20 km y lo atribuyó a la subducción de la placa de Nazca bajo la Sudamericana. El epicentro no indica la ubicación del hospital fotografiado; su ciudad y dirección aún no están documentadas.",
     "recursos": [
       {
         "id": "T05:lote2:1",
@@ -501,6 +507,12 @@ const TALLER_CASOS=[
         "titulo": "Downloads2.rar · Hospital IES · Ecuador 2016",
         "autor": "Equipo PUCP · aportado por el usuario",
         "licencia": "Uso en el taller; licencia de redistribución no declarada"
+      },
+      {
+        "tipo": "Contexto sísmico · fuente oficial",
+        "titulo": "IG-EPN · Informe Sísmico Especial N.º 13-2016",
+        "url": "https://www.igepn.edu.ec/servicios/noticias/1317-informe-sismico-especial-n-13-2016",
+        "autor": "Instituto Geofísico · Escuela Politécnica Nacional"
       }
     ],
     "evidencias": [
@@ -884,7 +896,6 @@ const TALLER_CASOS=[
   }
 ];
 const TALLER_PRACTICAS=TALLER_CASOS;
-const TALLER_RESUELTOS=[];
 const TALLER_EVENTOS_DOCUMENTALES=[
   {
     "uuid": "MX2017",
@@ -902,9 +913,9 @@ const TALLER_EVENTOS_DOCUMENTALES=[
   },
   {
     "uuid": "PUCP-CHUPACA-24JUL",
-    "nombre": "Chupaca · sismo de julio, según el aportante",
-    "fecha": "",
-    "referencia": "Captura 24/07/2026 según nombre de archivo; fecha exacta del evento no confirmada."
+    "nombre": "Chupaca · 18/07/2026 · M 5.4",
+    "fecha": "2026-07-18T21:24:00-05:00",
+    "referencia": "https://sigrid.cenepred.gob.pe/sigridv3/documento/22458"
   },
   {
     "uuid": "PUCP-TARQUI",
@@ -914,9 +925,9 @@ const TALLER_EVENTOS_DOCUMENTALES=[
   },
   {
     "uuid": "PUCP-LOTE2-hospital-ies",
-    "nombre": "Ecuador · sismo de 2016 (archivo del aportante)",
-    "fecha": "",
-    "referencia": "Downloads2.rar · Hospital IES · Ecuador 2016"
+    "nombre": "Ecuador · Pedernales · 16/04/2016 · Mw 7.8",
+    "fecha": "2016-04-16T18:58:00-05:00",
+    "referencia": "https://www.igepn.edu.ec/servicios/noticias/1317-informe-sismico-especial-n-13-2016"
   },
   {
     "uuid": "PUCP-LOTE2-alto-arauco",
