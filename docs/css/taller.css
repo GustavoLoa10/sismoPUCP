@@ -165,3 +165,9 @@ body.taller{height:auto;overflow:auto;background:#edf2f5;color:#213744;font:15px
 
 /* Doce fichas, con desplazamiento horizontal en pantallas pequeñas. */
 .participant-route .casos-chips{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:5px;scrollbar-width:thin}.participant-route .caso-chip{flex:1 0 42px;min-width:42px}.participant-route{min-width:0}.participant-route .casos-chips{min-width:0}
+
+/* Controles táctiles y vista horizontal de celular. */
+@media(max-width:850px){.taller .participant-profile input{font-size:16px;height:44px}.taller .participant-profile button,.participant-route .caso-chip,.taller #btnResumen{min-height:44px}.taller .dano-estado{min-width:44px;min-height:44px}.taller select,.taller input{min-height:44px}.taller .ficha-v2 .grid2{grid-template-columns:minmax(0,1fr)}.taller .ficha-v2 .habgrid{grid-template-columns:minmax(0,1fr)}.taller .dano-rubro{min-width:0;flex-wrap:wrap}.taller .dano-estados{flex-wrap:wrap}.taller-main{min-width:0}.participant-profile input{min-width:0}}
+@media(max-height:500px) and (orientation:landscape){.participant-dock{position:static}.paso-ficha{scroll-margin-top:12px}.taller #expediente{position:static}}
+
+.profile-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.taller #toggleProfile{display:none}@media(max-width:850px){.taller .participant-route .caso-chip{min-height:44px}.taller .dano-rubro{grid-template-columns:minmax(0,1fr)}.taller .dano-botones{min-width:0;justify-content:flex-start}.taller #toggleProfile{display:inline-block;min-height:44px;font-size:12px;padding:5px 10px}.participant-profile.profile-collapsed .perfil-grid{display:none}.participant-profile.profile-collapsed h2{margin:0}.taller .participant-profile #profileStatus{margin:3px 0}.taller .ficha-v2 input[type=checkbox]{min-height:20px}.taller .taller-actions button{min-height:44px}}

@@ -166,3 +166,5 @@ function iniciarCabeceraFija(){
  const dock=id('participantDock');const medir=()=>document.documentElement.style.setProperty('--dock-height',Math.ceil(dock.getBoundingClientRect().height)+'px');
  new ResizeObserver(medir).observe(dock);medir();actualizarAvisoPerfil();
 }
+
+id("toggleProfile").onclick=()=>{const profile=document.querySelector(".participant-profile"),collapsed=profile.classList.toggle("profile-collapsed");id("toggleProfile").setAttribute("aria-expanded",String(!collapsed));id("toggleProfile").textContent=collapsed?"Mostrar datos":"Ocultar datos";};

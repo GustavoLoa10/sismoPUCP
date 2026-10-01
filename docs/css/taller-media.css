@@ -54,3 +54,10 @@
 .caso-galeria .caso-imagen-ampliable[data-gallery-360]>img{display:block;width:100%;height:auto;aspect-ratio:8/5;min-height:0;max-height:none;object-fit:cover}.caso-imagen-ampliable[data-gallery-360]{background:#152d37;cursor:pointer}
 
 .panorama-shell:fullscreen{box-sizing:border-box;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:10px;width:100vw;height:100dvh;padding:16px;background:#152d37;color:white;overflow:auto}.panorama-shell:fullscreen canvas{height:100%;min-height:0;margin:0}.panorama-shell:fullscreen p{margin:0}
+
+/* Los visores se abren a pantalla completa del navegador en celulares. */
+@media(max-width:850px),(pointer:coarse) and (max-height:500px){
+ .taller #imageViewer,.taller .panorama-dialog,.taller #frameImageDialog{position:fixed;inset:0;width:100vw;height:100dvh;max-width:100vw;max-height:100dvh;margin:0;border:0;border-radius:0;box-sizing:border-box}
+ .taller #imageViewer{padding:0}.taller .image-viewer-header{gap:8px;padding:8px max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));align-items:center}.taller .image-viewer-header h2{font-size:14px}.taller .image-viewer-header .eyebrow{display:none}.taller .image-viewer-actions{flex-wrap:nowrap}.taller #btnImageFullscreen{display:none}.taller #btnImageViewerClose{min-height:44px;white-space:nowrap}.taller .image-viewer figure{padding:6px;overflow:hidden}.taller .image-viewer figcaption{max-height:20dvh;overflow:auto}.taller .image-viewer-shell{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+ .taller .panorama-dialog{padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));overflow:hidden}.taller .panorama-shell{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:6px;height:100%;min-height:0}.taller .panorama-dialog canvas{height:100%;min-height:0;margin:0}.taller .panorama-dialog header b{font-size:13px}.taller .panorama-dialog button{min-height:44px;font-size:12px}.taller .panorama-dialog p{font-size:11px;margin:0}.taller .panorama-dialog footer{gap:4px}.taller .panorama-dialog [data-action=full]{display:none}
+}

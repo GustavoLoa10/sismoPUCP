@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>sismoPUCP · Taller de daños</title>
   <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/taller.css?v=doce-1">
-  <link rel="stylesheet" href="css/taller-media.css">
+  <link rel="stylesheet" href="css/taller.css?v=movil-2">
+  <link rel="stylesheet" href="css/taller-media.css?v=movil-2">
 <link rel="stylesheet" href="css/marca-pucp.css?v=marca-2"></head>
 <body class="taller">
   <header class="taller-header">
@@ -16,8 +16,8 @@
   <main class="taller-main">
 <div class="participant-dock" id="participantDock">
  <section class="taller-acceso participant-profile" aria-labelledby="datosParticipanteTitulo">
-  <h2 id="datosParticipanteTitulo">Datos del participante</h2>
-  <div class="perfil-grid">
+  <div class="profile-heading"><h2 id="datosParticipanteTitulo">Datos del participante</h2><button id="toggleProfile" type="button" aria-expanded="true" aria-controls="participantFields">Ocultar datos</button></div>
+  <div class="perfil-grid" id="participantFields">
    <label>Nombre y apellidos *<input id="participantName" autocomplete="name" maxlength="120" placeholder="Nombre y apellidos" required></label>
    <label>Código PUCP *<input id="participantPUCP" autocomplete="off" maxlength="20" placeholder="Código PUCP" required></label>
    <label>Institución<input id="participantInstitution" autocomplete="organization" maxlength="120" placeholder="Universidad o institución"></label>
@@ -76,8 +76,8 @@
   <script>globalThis.SISMO_TALLER=true;</script>
   <script src="js/util.js"></script><script src="js/config.js"></script><script src="js/storage.js"></script><script src="js/dano-model.js"></script><script src="js/ficha-dano.js"></script><script src="js/reportes.js"></script>
   <script src="js/guia-grados.js"></script>
-  <script src="js/catalogo-taller.js?v=doce-1"></script><script src="js/taller-alumnos-casos.js?v=doce-3"></script>
-  <script src="js/taller-recorridos.js"></script><script src="js/taller-360.js"></script><script src="js/taller.js?v=doce-1"></script>
+  <script src="js/catalogo-taller.js?v=orden-2"></script><script src="js/taller-alumnos-casos.js?v=orden-2"></script>
+  <script src="js/taller-recorridos.js"></script><script src="js/taller-360.js"></script><script src="js/taller.js?v=movil-2"></script>
   <script src="js/entregas-config.js"></script><script src="js/entregas.js?v=doce-1"></script>
 </body>
 </html>

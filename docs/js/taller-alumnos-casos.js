@@ -811,16 +811,117 @@ const TALLER_CASOS=[
     "numero": 8
   },
   {
-    "id": "T05",
+    "id": "T06",
     "tipo": "practica",
     "documental": true,
     "numero": 9,
+    "titulo": "Edificio Alto Arauco · Maule 2010",
+    "ubicacion": "Chile · dirección exacta por confirmar",
+    "eventoId": "PUCP-LOTE2-alto-arauco",
+    "evento": "Maule, Chile · sismo de 2010 (archivo del aportante)",
+    "fechaEvento": "",
+    "nivel": "PRÁCTICA 9 · archivo Equipo PUCP",
+    "basal": "Edificio en altura con elementos de concreto y revestimiento de ladrillo aparente; no se define el sistema resistente global a partir de la fachada.",
+    "lecturaVisual": "Compare las vistas generales y los detalles; registre únicamente lo que cada fotografía permite observar.",
+    "contexto": "Archivo aportado por el usuario y agrupado por inmueble. Sin inspección presencial, planos, escala de medición ni comprobación independiente de dirección, fecha de captura o sistema completo. No se atribuyen daños a niveles y elementos ocultos. Archivo identificado como Maule 2010 · captura no confirmada.",
+    "recursos": [
+      {
+        "id": "T06:lote2:1",
+        "caseId": "T06",
+        "tipo": "incluida",
+        "origen": "aportada",
+        "src": "data/taller/aportes2-20260928/alto-arauco/DSC_0317.jpg",
+        "titulo": "Vista general del edificio",
+        "descripcion": "Fachada principal y volumen completo desde la calle.",
+        "autor": "Equipo PUCP · archivo aportado",
+        "fecha": "Archivo identificado como Maule 2010 · captura no confirmada",
+        "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada",
+        "orden": 0
+      },
+      {
+        "id": "T06:lote2:2",
+        "caseId": "T06",
+        "tipo": "incluida",
+        "origen": "aportada",
+        "src": "data/taller/aportes2-20260928/alto-arauco/DSC_0325.jpg",
+        "titulo": "Otra vista general de fachada",
+        "descripcion": "Segundo encuadre de la serie aportada, con acceso y niveles superiores.",
+        "autor": "Equipo PUCP · archivo aportado",
+        "fecha": "Archivo identificado como Maule 2010 · captura no confirmada",
+        "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada",
+        "orden": 1
+      },
+      {
+        "id": "T06:lote2:3",
+        "caseId": "T06",
+        "tipo": "incluida",
+        "origen": "aportada",
+        "src": "data/taller/aportes2-20260928/alto-arauco/DSC_0324.jpg",
+        "titulo": "Fachada y niveles inferiores",
+        "descripcion": "Vista oblicua de los paños y encuentros de los niveles inferiores.",
+        "autor": "Equipo PUCP · archivo aportado",
+        "fecha": "Archivo identificado como Maule 2010 · captura no confirmada",
+        "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada",
+        "orden": 2
+      },
+      {
+        "id": "T06:lote2:4",
+        "caseId": "T06",
+        "tipo": "incluida",
+        "origen": "aportada",
+        "src": "data/taller/aportes2-20260928/alto-arauco/DSC_0319.jpg",
+        "titulo": "Detalle de encuentro en fachada",
+        "descripcion": "Acercamiento a una zona con pérdida de material junto al encuentro del volumen bajo.",
+        "autor": "Equipo PUCP · archivo aportado",
+        "fecha": "Archivo identificado como Maule 2010 · captura no confirmada",
+        "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada",
+        "orden": 3
+      }
+    ],
+    "fuentes": [
+      {
+        "tipo": "Archivo aportado",
+        "titulo": "Downloads2.rar · Edificio Alto Arauco · Maule 2010",
+        "autor": "Equipo PUCP · aportado por el usuario",
+        "licencia": "Uso en el taller; licencia de redistribución no declarada"
+      }
+    ],
+    "evidencias": [
+      [
+        "F1",
+        "Vista general del edificio · Fachada principal y volumen completo desde la calle."
+      ],
+      [
+        "F2",
+        "Otra vista general de fachada · Segundo encuadre de la serie aportada, con acceso y niveles superiores."
+      ],
+      [
+        "F3",
+        "Fachada y niveles inferiores · Vista oblicua de los paños y encuentros de los niveles inferiores."
+      ],
+      [
+        "F4",
+        "Detalle de encuentro en fachada · Acercamiento a una zona con pérdida de material junto al encuentro del volumen bajo."
+      ]
+    ],
+    "preguntas": [
+      "Identifique el sistema aparente y los elementos que puede observar.",
+      "Registre cada daño con su fotografía; diferencie observación de hipótesis.",
+      "Complete los rubros con evidencia suficiente y marque No determinado en los demás.",
+      "Fundamente una decisión preliminar de uso y las comprobaciones pendientes."
+    ]
+  },
+  {
+    "id": "T05",
+    "tipo": "practica",
+    "documental": true,
+    "numero": 10,
     "titulo": "Hospital IES · Ecuador 2016",
     "ubicacion": "Ecuador · ciudad y dirección por confirmar",
     "eventoId": "PUCP-LOTE2-hospital-ies",
     "evento": "Ecuador · Pedernales · 16/04/2016 · Mw 7.8",
     "fechaEvento": "2016-04-16T18:58:00-05:00",
-    "nivel": "PRÁCTICA 9 · archivo Equipo PUCP",
+    "nivel": "PRÁCTICA 10 · archivo Equipo PUCP",
     "basal": "Elementos de concreto armado aparentes y cerramientos de mampostería; función de cada elemento y configuración resistente completa por verificar.",
     "lecturaVisual": "Compare las vistas generales y los detalles; registre únicamente lo que cada fotografía permite observar.",
     "contexto": "Archivo aportado por el usuario y agrupado por inmueble. Sin inspección presencial, planos, escala de medición ni comprobación independiente de dirección, fecha de captura o sistema completo. No se atribuyen daños a niveles y elementos ocultos. 23/04/2016 · captura EXIF. Contexto sísmico: el terremoto ocurrió el 16/04/2016 a las 18:58 hora local (UTC−5), con magnitud Mw 7.8 y epicentro frente a Pedernales, Manabí. El IG-EPN reportó inicialmente una profundidad de 20 km y lo atribuyó a la subducción de la placa de Nazca bajo la Sudamericana. El epicentro no indica la ubicación del hospital fotografiado; su ciudad y dirección aún no están documentadas.",
@@ -925,107 +1026,6 @@ const TALLER_CASOS=[
       [
         "F-G",
         "Registro adicional aportado: vista del interior, columna, cerramientos e instalaciones."
-      ]
-    ],
-    "preguntas": [
-      "Identifique el sistema aparente y los elementos que puede observar.",
-      "Registre cada daño con su fotografía; diferencie observación de hipótesis.",
-      "Complete los rubros con evidencia suficiente y marque No determinado en los demás.",
-      "Fundamente una decisión preliminar de uso y las comprobaciones pendientes."
-    ]
-  },
-  {
-    "id": "T06",
-    "tipo": "practica",
-    "documental": true,
-    "numero": 10,
-    "titulo": "Edificio Alto Arauco · Maule 2010",
-    "ubicacion": "Chile · dirección exacta por confirmar",
-    "eventoId": "PUCP-LOTE2-alto-arauco",
-    "evento": "Maule, Chile · sismo de 2010 (archivo del aportante)",
-    "fechaEvento": "",
-    "nivel": "PRÁCTICA 10 · archivo Equipo PUCP",
-    "basal": "Edificio en altura con elementos de concreto y revestimiento de ladrillo aparente; no se define el sistema resistente global a partir de la fachada.",
-    "lecturaVisual": "Compare las vistas generales y los detalles; registre únicamente lo que cada fotografía permite observar.",
-    "contexto": "Archivo aportado por el usuario y agrupado por inmueble. Sin inspección presencial, planos, escala de medición ni comprobación independiente de dirección, fecha de captura o sistema completo. No se atribuyen daños a niveles y elementos ocultos. Archivo identificado como Maule 2010 · captura no confirmada.",
-    "recursos": [
-      {
-        "id": "T06:lote2:1",
-        "caseId": "T06",
-        "tipo": "incluida",
-        "origen": "aportada",
-        "src": "data/taller/aportes2-20260928/alto-arauco/DSC_0317.jpg",
-        "titulo": "Vista general del edificio",
-        "descripcion": "Fachada principal y volumen completo desde la calle.",
-        "autor": "Equipo PUCP · archivo aportado",
-        "fecha": "Archivo identificado como Maule 2010 · captura no confirmada",
-        "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada",
-        "orden": 0
-      },
-      {
-        "id": "T06:lote2:2",
-        "caseId": "T06",
-        "tipo": "incluida",
-        "origen": "aportada",
-        "src": "data/taller/aportes2-20260928/alto-arauco/DSC_0325.jpg",
-        "titulo": "Otra vista general de fachada",
-        "descripcion": "Segundo encuadre de la serie aportada, con acceso y niveles superiores.",
-        "autor": "Equipo PUCP · archivo aportado",
-        "fecha": "Archivo identificado como Maule 2010 · captura no confirmada",
-        "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada",
-        "orden": 1
-      },
-      {
-        "id": "T06:lote2:3",
-        "caseId": "T06",
-        "tipo": "incluida",
-        "origen": "aportada",
-        "src": "data/taller/aportes2-20260928/alto-arauco/DSC_0324.jpg",
-        "titulo": "Fachada y niveles inferiores",
-        "descripcion": "Vista oblicua de los paños y encuentros de los niveles inferiores.",
-        "autor": "Equipo PUCP · archivo aportado",
-        "fecha": "Archivo identificado como Maule 2010 · captura no confirmada",
-        "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada",
-        "orden": 2
-      },
-      {
-        "id": "T06:lote2:4",
-        "caseId": "T06",
-        "tipo": "incluida",
-        "origen": "aportada",
-        "src": "data/taller/aportes2-20260928/alto-arauco/DSC_0319.jpg",
-        "titulo": "Detalle de encuentro en fachada",
-        "descripcion": "Acercamiento a una zona con pérdida de material junto al encuentro del volumen bajo.",
-        "autor": "Equipo PUCP · archivo aportado",
-        "fecha": "Archivo identificado como Maule 2010 · captura no confirmada",
-        "licencia": "Archivo aportado para uso en el taller; licencia de redistribución no declarada",
-        "orden": 3
-      }
-    ],
-    "fuentes": [
-      {
-        "tipo": "Archivo aportado",
-        "titulo": "Downloads2.rar · Edificio Alto Arauco · Maule 2010",
-        "autor": "Equipo PUCP · aportado por el usuario",
-        "licencia": "Uso en el taller; licencia de redistribución no declarada"
-      }
-    ],
-    "evidencias": [
-      [
-        "F1",
-        "Vista general del edificio · Fachada principal y volumen completo desde la calle."
-      ],
-      [
-        "F2",
-        "Otra vista general de fachada · Segundo encuadre de la serie aportada, con acceso y niveles superiores."
-      ],
-      [
-        "F3",
-        "Fachada y niveles inferiores · Vista oblicua de los paños y encuentros de los niveles inferiores."
-      ],
-      [
-        "F4",
-        "Detalle de encuentro en fachada · Acercamiento a una zona con pérdida de material junto al encuentro del volumen bajo."
       ]
     ],
     "preguntas": [
