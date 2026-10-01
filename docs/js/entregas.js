@@ -1,6 +1,6 @@
 // La clave publicable identifica la web; los permisos se aplican en Supabase.
 let envioEnCurso=false;
-function mensajeEntrega(texto){id('deliveryStatus').textContent=texto;}
+function mensajeEntrega(texto){id('deliveryStatus').hidden=false;id('deliveryStatus').textContent=texto;}
 async function prepararEntrega(){
  await Storage._draftQueue;
  const participante={nombre:id('participantName').value.trim(),codigoPUCP:id('participantPUCP').value.trim(),institucion:id('participantInstitution').value.trim(),equipo:id('participantTeam').value.trim()};
@@ -27,7 +27,7 @@ async function enviarEntrega(){
  try{
   const codigo=ENTREGAS_CONFIG.sessionCode;if(!codigo)throw Error('No está configurado el taller de destino.');
   const data=await prepararEntrega();
-  if(!confirm('Enviar '+data.respuestas.length+' de 8 fichas finalizadas al instructor. Las fotografías añadidas y los borradores no se enviarán. ¿Continuar?'))return;
+  if(!await confirmarEntrega(data))return;
   const contenido=JSON.stringify({codigo,...data}),huella=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(contenido)))).map(x=>x.toString(16).padStart(2,'0')).join('');
   let anterior;try{anterior=JSON.parse(localStorage.getItem('sismoPUCP_ultima_entrega'))}catch{}
   const envioId=anterior?.huella===huella?anterior.id:crypto.randomUUID();
@@ -44,3 +44,8 @@ async function enviarEntrega(){
 }
 id('btnSendDelivery').onclick=enviarEntrega;
 try{const r=JSON.parse(localStorage.getItem('sismoPUCP_recibo'));if(r)mensajeEntrega('Última entrega confirmada: '+r.fichas+' fichas. Comprobante: '+r.id);}catch{}
+
+function confirmarEntrega(data){
+ const dialog=id('confirmDelivery');id('confirmDeliverySummary').textContent=data.participante.nombre+' · Código PUCP '+data.participante.codigoPUCP+' · '+data.respuestas.length+' de 8 fichas finalizadas.';
+ return new Promise(resolve=>{let aceptar=false;const cerrar=()=>{dialog.removeEventListener('close',cerrar);resolve(aceptar)};dialog.addEventListener('close',cerrar);id('cancelDelivery').onclick=()=>dialog.close();id('acceptDelivery').onclick=()=>{aceptar=true;dialog.close()};dialog.showModal()});
+}

@@ -44,14 +44,14 @@
       </div>
       <section id="resumenTaller" class="taller-resumen" hidden></section>
     </section>
-    <section class="taller-acceso entrega-alumnos" aria-labelledby="deliveryTitle">
-      <div class="card-accent" aria-hidden="true"></div><h2 id="deliveryTitle">Entregar al instructor</h2>
-      <p>Finaliza tus fichas y envía las que hayas completado. Los borradores y las fotografías añadidas permanecen en este dispositivo.</p>
-      <button id="btnSendDelivery" type="button">Enviar al instructor</button>
-      <p id="deliveryStatus" role="status" aria-live="polite">Aún no has enviado tus respuestas.</p>
-    </section>
+    <div class="entrega-alumnos entrega-final"><button id="btnSendDelivery" type="button">ENVIAR AL EQUIPO DOCENTE</button><p id="deliveryStatus" role="status" aria-live="polite" hidden></p></div>
   </main>
 
+<dialog id="confirmDelivery" class="confirm-delivery" aria-labelledby="confirmDeliveryTitle">
+ <h2 id="confirmDeliveryTitle">¿Estás seguro de enviar tus respuestas al equipo docente?</h2>
+ <p id="confirmDeliverySummary"></p><p>Se enviarán las fichas finalizadas. Los borradores y las fotografías añadidas permanecerán en tu dispositivo.</p>
+ <div class="confirm-actions"><button id="cancelDelivery" type="button" autofocus>Volver a revisar</button><button id="acceptDelivery" type="button">Sí, enviar</button></div>
+</dialog>
   <dialog id="imageViewer" class="image-viewer" aria-labelledby="imageViewerTitle">
     <div class="image-viewer-shell">
       <header class="image-viewer-header">
