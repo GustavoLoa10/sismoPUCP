@@ -20,7 +20,7 @@ const SISTEMAS_RESISTENTES_DANO=['Pórticos de concreto armado','Muros de concre
 function sistemaResistenteHTML(valor=''){
  const opciones=[['','— Seleccione —'],...SISTEMAS_RESISTENTES_DANO.map(v=>[v,v])];
  if(valor&&!SISTEMAS_RESISTENTES_DANO.includes(valor))opciones.push([valor,valor]);
- return `<label for="ev_sistema_observado">Sistema resistente aparente *</label><select id="ev_sistema_observado">${opts(opciones,valor)}</select>`;
+ return `<div class="field-inline"><label for="ev_sistema_observado">Sistema resistente aparente *</label><div class="system-guide-control"><select id="ev_sistema_observado">${opts(opciones,valor)}</select><button id="btnGradeGuide" type="button" aria-label="Ampliar guía visual de los cinco grados de daño" title="Ver los cinco grados de daño"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M17 17l8 8M7 11h8M11 7v8"/></svg></button></div></div>`;
 }
 function opcionesDanoGlobalTaller(valor){
  const opciones=GRADOS_DANO_TALLER.map(x=>[...x]);
@@ -38,10 +38,10 @@ function danoFormHTML(f,datos=S.draft){
   <div id="draftStatus" class="save-status${modoTaller?' sr-only':''}" role="status">${Storage.loadDraft(d.buildingKey)?'Borrador recuperado del dispositivo.':'Nueva evaluación. Los cambios se guardan en este dispositivo.'}</div>
   <h3>1 · Identificar</h3>
 
-  <label for="ev_evento">Evento</label><select id="ev_evento" disabled aria-readonly="true">${opts([['','Sin evento'],...S.eventos.map(e=>[e.uuid,e.nombre])],d.eventoId)}</select>
-  <div class="grid2"><div><label for="ev_tipo">Tipo</label><select id="ev_tipo" disabled aria-readonly="true">${opts(TIPO_EVAL,d.tipo)}</select></div><div><label for="ev_fecha">Fecha y hora de evaluación</label><input id="ev_fecha" type="datetime-local" value="${attr(d.fecha?.includes('Z')?fechaLocalDano(d.fecha):d.fecha)}"></div></div>
+  <div class="field-inline"><label for="ev_evento">Evento</label><select id="ev_evento" disabled aria-readonly="true">${opts([['','Sin evento'],...S.eventos.map(e=>[e.uuid,e.nombre])],d.eventoId)}</select></div>
+  <div class="identification-grid"><div class="field-inline"><label for="ev_tipo">Tipo</label><select id="ev_tipo" disabled aria-readonly="true">${opts(TIPO_EVAL,d.tipo)}</select></div><div class="field-inline"><label for="ev_fecha">Fecha y hora de evaluación</label><input id="ev_fecha" type="datetime-local" value="${attr(d.fecha?.includes('Z')?fechaLocalDano(d.fecha):d.fecha)}"></div></div>
   <h3>2 · Alcance y edificio</h3>
-  <label for="ev_alcance">Áreas inspeccionadas *</label><select id="ev_alcance">${opts(ALCANCES.map(([v,t])=>[v,v?t:'— Seleccione —']),d.alcance)}</select>
+  <div class="field-inline"><label for="ev_alcance">Áreas inspeccionadas *</label><select id="ev_alcance">${opts(ALCANCES.map(([v,t])=>[v,v?t:'— Seleccione —']),d.alcance)}</select></div>
   ${sistemaResistenteHTML(d.sistema_observado)}
   ${danoInput('limitaciones','Zonas no inspeccionadas, peligros de acceso e información faltante',d.limitaciones,true)}
   <h3>3 · Observar los daños</h3>${danoLegendHTML()}<div id="danoGrupos">${grupos}</div>
@@ -50,10 +50,10 @@ function danoFormHTML(f,datos=S.draft){
   <details class="metodo-opcional"><summary>Método y comprobaciones adicionales (opcional)</summary>${danoInput('metodo_detallado','Descripción del método',d.metodo_detallado,true)}</details>
   <div class="foto-carga"><label for="fotoInput">Fotografías</label><input id="fotoInput" type="file" accept="image/*" capture="environment" multiple></div><div id="photoStatus" role="status"></div><div class="evidence-photos" id="fotoThumbs"></div>
   ${danoInput('obs','Observaciones adicionales',d.observaciones,true)}
-  <h3>5 · Decisión preliminar de uso</h3><div class="habgrid" id="habGrid">${HABITABILIDAD.map(([v,t])=>`<button type="button" aria-pressed="${d.habitabilidad===v}" class="habbtn ${d.habitabilidad===v?'active':''}" data-v="${v}"><span class="dot"></span>${esc(v==='habitable'?'Uso permitido':t)}</button>`).join('')}</div>
+  <h3>5 · Grado de daño y pancarta</h3><div class="field-inline"><label for="ev_pct">Grado de daño de la edificación *</label><select id="ev_pct" required>${opts(opcionesDanoGlobalTaller(d.pct_dano),d.pct_dano)}</select></div><p id="gradePlacardStatus" class="grade-placard-status" role="status" aria-live="polite"></p><div class="habgrid" id="habGrid">${HABITABILIDAD.map(([v,t])=>`<button type="button" aria-pressed="${d.habitabilidad===v}" class="habbtn ${d.habitabilidad===v?'active':''}" data-v="${v}"><span class="dot"></span>${esc(v==='habitable'?'Uso permitido':t)}</button>`).join('')}</div>
   ${danoInput('fundamento','Fundamento de la decisión *',d.fundamento,true)}
   ${danoInput('restricciones','Áreas, accesos y usos restringidos',d.restricciones,true)}
-  <label for="ev_pct">Daño global estimado (opcional)</label><select id="ev_pct">${opts(modoTaller?opcionesDanoGlobalTaller(d.pct_dano):PCT_DANO,d.pct_dano)}</select>
+  
   <h3>6 · Medidas y revisión</h3>
   <div class="medidas-opciones"><label class="chkrow"><input type="checkbox" id="ev_barricada" ${d.barricada?'checked':''}>Requiere barricada / restricción de acceso</label>
   <label class="chkrow"><input type="checkbox" id="ev_detallada" ${d.eval_detallada?'checked':''}>Requiere evaluación detallada</label></div>
@@ -82,7 +82,8 @@ function wireDanoForm(f){
   const bind=(key,prop=key)=>{const el=id('ev_'+key);if(!el)return;el.oninput=el.onchange=()=>{if(S.draft!==activeDraft||!el.isConnected)return;S.draft[prop]=el.type==='checkbox'?el.checked:el.value;saveDraftDebounced()}};
   for(const key of ['evaluador','cip','tipo','fecha','alcance','sistema_observado','limitaciones','fundamento','restricciones','metodo_detallado','justificacion_alertas','barricada'])bind(key);
   for(const [key,prop] of [['evento','eventoId'],['pct','pct_dano'],['detallada','eval_detallada'],['acciones','acciones_otras'],['obs','observaciones']])bind(key,prop);
-  id('habGrid').onclick=e=>{const b=e.target.closest('.habbtn');if(!b)return;S.draft.habitabilidad=b.dataset.v;for(const x of id('habGrid').children){x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))}saveDraftDebounced()};
+  wireGuiaGrados();
+  id('habGrid').onclick=e=>{if(PANCARTA_GRADO[S.draft.pct_dano])return;const b=e.target.closest('.habbtn');if(!b)return;S.draft.habitabilidad=b.dataset.v;for(const x of id('habGrid').children){x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))}saveDraftDebounced()};
   id('danoGrupos').onclick=e=>{const b=e.target.closest('.dano-estado');if(!b)return;S.draft.danos[b.dataset.rubro]=b.dataset.v;if(['leve','moderado','severo','parcial','total','si'].includes(b.dataset.v)&&!S.draft.registros.some(r=>r.rubro===b.dataset.rubro)){S.draft.registros.push({...nuevoRegistroDano(),rubro:b.dataset.rubro,severidad:['leve','moderado','severo'].includes(b.dataset.v)?b.dataset.v:''});renderRegistrosDano();}for(const x of b.parentElement.children){const active=x===b;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))}saveDraftDebounced()};
   id('btnAddRegistro').onclick=()=>{S.draft.registros.push(nuevoRegistroDano());renderRegistrosDano();saveDraftDebounced()};
   renderRegistrosDano();renderFotoThumbs();id('coherenceField').hidden=!validarDano(S.draft).avisos.length;
@@ -116,7 +117,8 @@ async function saveEval(f){
   const d=S.draft;if(d._photosLoading){alert('Espere a que terminen de guardarse las fotografías.');return}
   const anterior=evalsOf(d.buildingKey).find(e=>e.uuid===d.uuid),eraEdicion=!!anterior;
   if(eraEdicion&&!evalPuede(anterior)){alert('Esta evaluación pertenece a otro usuario. Solicite la modificación al coordinador.');return}
-  const {errores,avisos}=validarDano(d),box=id('validationDano');id('coherenceField').hidden=!avisos.length;
+  if(PANCARTA_GRADO[d.pct_dano])d.habitabilidad=PANCARTA_GRADO[d.pct_dano];
+  const {errores,avisos}=validarDano(d),box=id('validationDano');if(!PANCARTA_GRADO[d.pct_dano])errores.unshift('Selecciona un grado de daño de la edificación, del 1 al 5.');id('coherenceField').hidden=!avisos.length;
   box.innerHTML=[...errores,...avisos].map(t=>`<p>${esc(t)}</p>`).join('');if(errores.length){box.focus();return}
   if(!d.eventoId&&!confirm('No hay evento asociado. ¿Finalizar de todos modos?'))return;
   const button=id('btnSaveEval');if(button.disabled)return;button.disabled=true;const form=button.closest('.ficha-v2');form.inert=true;
