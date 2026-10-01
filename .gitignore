@@ -7,3 +7,5 @@
 /supabase/*
 !/supabase/activar-entregas.sql
 !/supabase/autorizar-docente.sql
+
+!/supabase/limitar-un-envio-por-codigo.sql

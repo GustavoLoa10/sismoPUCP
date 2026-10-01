@@ -14,7 +14,7 @@ La contraseña del usuario docente es distinta de la contraseña de PostgreSQL. 
 
 ## Uso
 
-Los alumnos introducen su nombre y Código PUCP en la cabecera fija, finalizan cada ficha y pulsan Enviar al instructor. La identidad de cada evaluación se toma de esa cabecera. Se entregan entre una y doce fichas finalizadas, sin fotografías añadidas ni borradores. Cada envío recibe un comprobante; un reintento idéntico usa el mismo ID. Las modificaciones requieren finalizar de nuevo y generan otra entrega, conservando el historial.
+Los alumnos introducen su nombre y Código PUCP en la cabecera fija, finalizan cada ficha y pulsan Enviar al instructor. La identidad de cada evaluación se toma de esa cabecera. Se entregan entre una y doce fichas finalizadas, sin fotografías añadidas ni borradores. Cada envío recibe un comprobante; un reintento idéntico usa el mismo ID. Las modificaciones deben finalizarse antes del único envío permitido por Código PUCP y sesión. Los reintentos idénticos conservan el mismo comprobante.
 
 El panel docente requiere un usuario autorizado en `taller_docentes`, permite consultar entregas, descargar un CSV completo y abrir o cerrar la sesión de entregas. Las sesiones de acceso se mantienen en memoria. Las respuestas nunca se guardan en GitHub.
 
@@ -35,3 +35,9 @@ Se retiraron criterios sugeridos residuales de tres casos del JavaScript públic
 Las entregas incluyen todos los campos de la evaluación finalizada excepto fotos y fotoMetadatos. La función limita cada entrega a 200000 bytes de respuestas y 4000 bytes de participante; 100 entregas suman como máximo aproximadamente 20.4 MB de JSON, más índices y metadatos. Los reenvíos modificados conservan historial y consumen espacio adicional.
 
 El código de sesión es público y permite enviar: no autentica la identidad del alumno. Un visitante puede suplantar un Código PUCP o generar muchos envíos. Para identidad verificable y control de abuso hace falta autenticación de alumnos y límites de envío en servidor. Las estadísticas cargan todas las páginas y usan la última respuesta por alumno, sesión y caso; los textos completos quedan en detalle y CSV.
+
+## Un envío por código
+
+Ejecutar supabase/limitar-un-envio-por-codigo.sql en el SQL Editor para activar el límite de servidor. Se reserva atómicamente un envío por Código PUCP normalizado y sesión; también cuenta los códigos de entregas anteriores. Los reintentos con el mismo ID y contenido devuelven el mismo comprobante. Las respuestas existentes se conservan. El navegador advierte que no se podrán añadir ni modificar fichas después del envío y guarda el comprobante por código y sesión.
+
+El panel incluye barras de decisiones y participación, mapa de grados por caso, coincidencia de decisiones, incertidumbre por rubro, distribuciones de sistemas e irregularidades y exploración anónima de fundamentos. La cobertura usa como denominador solo a los participantes con entregas, no el padrón de inscritos. No se agregan datos de demostración a la base ni al sitio.

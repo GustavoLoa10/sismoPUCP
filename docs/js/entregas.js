@@ -3,9 +3,9 @@ let envioEnCurso=false;
 function mensajeEntrega(texto){id('deliveryStatus').hidden=false;id('deliveryStatus').textContent=texto;}
 async function prepararEntrega(){
  await Storage._draftQueue;
- const participante={nombre:id('participantName').value.trim(),codigoPUCP:id('participantPUCP').value.trim(),institucion:id('participantInstitution').value.trim(),equipo:id('participantTeam').value.trim()};
+ const participante={nombre:id('participantName').value.trim(),codigoPUCP:id('participantPUCP').value.trim().toUpperCase(),institucion:id('participantInstitution').value.trim(),equipo:id('participantTeam').value.trim()};
  if(participante.nombre.length<2)throw Error('Escribe tu nombre y apellidos antes de entregar.');
- if(!participante.codigoPUCP)throw Error('Escribe tu Código PUCP antes de entregar.');
+ if(!/^[A-Z0-9]{1,20}$/.test(participante.codigoPUCP))throw Error('Escribe tu Código PUCP antes de entregar.');
  const respuestas=[];
  for(const c of TALLER_PRACTICAS){
   const key='TALLER-'+c.id,ev=evalsOf(key).find(e=>e.estadoRegistro!=='anulada'&&e.eventoId===c.eventoId);
@@ -27,6 +27,9 @@ async function enviarEntrega(){
  try{
   const codigo=ENTREGAS_CONFIG.sessionCode;if(!codigo)throw Error('No está configurado el taller de destino.');
   const data=await prepararEntrega();
+  const reciboKey='sismoPUCP_entrega_unica:'+codigo+':'+data.participante.codigoPUCP;
+  const reciboPrevio=localStorage.getItem(reciboKey);
+  if(reciboPrevio)throw Error('Este Código PUCP ya tiene una entrega confirmada en esta sesión. Solo se permite un envío.');
   if(!await confirmarEntrega(data))return;
   const contenido=JSON.stringify({codigo,...data}),huella=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(contenido)))).map(x=>x.toString(16).padStart(2,'0')).join('');
   let anterior;try{anterior=JSON.parse(localStorage.getItem('sismoPUCP_ultima_entrega'))}catch{}
@@ -38,6 +41,7 @@ async function enviarEntrega(){
   const result=await response.json();if(!response.ok)throw Error(result.code==='PGRST202'?'Falta activar las tablas de entregas en Supabase.':result.message||'No se pudo registrar la entrega.');
   if(result.id!==envioId||!result.recibida_en||result.fichas!==data.respuestas.length)throw Error('No se recibió una confirmación válida. Puedes reintentar con el mismo identificador.');
   localStorage.setItem('sismoPUCP_recibo',JSON.stringify(result));
+  localStorage.setItem(reciboKey,JSON.stringify(result));
   mensajeEntrega('Entrega recibida: '+result.fichas+' de '+TALLER_PRACTICAS.length+' fichas. Fecha: '+new Date(result.recibida_en).toLocaleString('es-PE',{timeZone:'America/Lima'})+'. Comprobante: '+result.id);
   mostrarResumen();id('resumenTaller').hidden=false;id('resumenTaller').scrollIntoView({behavior:'smooth',block:'start'});
  }catch(err){mensajeEntrega('No se confirmó la entrega. '+(err.name==='TimeoutError'?'La conexión tardó demasiado. Reintenta; se conservará el mismo identificador.':err.message)+' Tus respuestas siguen guardadas en este dispositivo.');}
@@ -47,6 +51,6 @@ id('btnSendDelivery').onclick=enviarEntrega;
 try{const r=JSON.parse(localStorage.getItem('sismoPUCP_recibo'));if(r)mensajeEntrega('Última entrega confirmada: '+r.fichas+' fichas. Comprobante: '+r.id);}catch{}
 
 function confirmarEntrega(data){
- const dialog=id('confirmDelivery');id('confirmDeliverySummary').textContent=data.participante.nombre+' · Código PUCP '+data.participante.codigoPUCP+' · '+data.respuestas.length+' de '+TALLER_PRACTICAS.length+' fichas finalizadas.';
+ const dialog=id('confirmDelivery');id('confirmDeliverySummary').textContent=data.participante.nombre+' · Código PUCP '+data.participante.codigoPUCP+' · '+data.respuestas.length+' de '+TALLER_PRACTICAS.length+' fichas finalizadas. Solo se permite un envío por Código PUCP en esta sesión; después no podrás añadir ni modificar fichas.';
  return new Promise(resolve=>{let aceptar=false;const cerrar=()=>{dialog.removeEventListener('close',cerrar);resolve(aceptar)};dialog.addEventListener('close',cerrar);id('cancelDelivery').onclick=()=>dialog.close();id('acceptDelivery').onclick=()=>{aceptar=true;dialog.close()};dialog.showModal()});
 }
