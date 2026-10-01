@@ -16,8 +16,18 @@ function estadisticasHTML(lista){const r=resumirEntregas(lista),celda=(n,total)=
  q('statsCaseFilter').onchange=()=>pintarDanosEstadistica(r,q('statsCaseFilter').value);pintarDanosEstadistica(r,elegido);
  q('statsNote').textContent='Porcentajes calculados sobre las respuestas recibidas para cada ficha. Se agrupa por Código PUCP y sesión; las entregas antiguas sin código se agrupan por nombre, institución y equipo. No se asignan notas ni se determina una respuesta correcta automáticamente.';
 }
-function pintarDanosEstadistica(resumen,caso){const c=resumen.casos.find(x=>x.caso===caso),rubros=new Map(),etiquetas={ninguno:'Sin daño observado',leve:'Leve',moderado:'Moderado',severo:'Severo',parcial:'Parcial',total:'Total',no:'No observado',si:'Sí observado',no_inspeccionado:'No inspeccionado',no_aplica:'No aplicable',no_determinado:'No determinado'};
+function pintarDanosEstadistica(resumen,caso){const c=resumen.casos.find(x=>x.caso===caso);pintarCamposEstadistica(c);const rubros=new Map(),etiquetas={ninguno:'Sin daño observado',leve:'Leve',moderado:'Moderado',severo:'Severo',parcial:'Parcial',total:'Total',no:'No observado',si:'Sí observado',no_inspeccionado:'No inspeccionado',no_aplica:'No aplicable',no_determinado:'No determinado'};
  for(const r of c.filas)for(const [rubro,estado] of Object.entries(r.evaluacion.danos||{})){if(!rubros.has(rubro))rubros.set(rubro,new Map());const estados=rubros.get(rubro);estados.set(estado,(estados.get(estado)||0)+1)}
  const labels={colapso:'Colapso',inclinacion:'Inclinación del edificio',columnas:'Columnas',vigas:'Vigas',muros:'Muros portantes',losas:'Losas / techos',tabiques:'Tabiques',parapetos:'Parapetos / fachada',vidrios:'Vidrios',escaleras:'Escaleras',instalaciones:'Instalaciones',deslizamiento:'Deslizamiento',asentamiento:'Asentamiento del terreno',grietas_terreno:'Grietas en el terreno',licuefaccion:'Licuefacción',caida_objetos:'Caída de objetos',vecino_inestable:'Edificio vecino inestable'};
  q('statsDamage').innerHTML=Array.from(rubros).sort(([a],[b])=>a.localeCompare(b)).flatMap(([rubro,estados])=>Array.from(estados).map(([estado,n])=>'<tr><td>'+safe(labels[rubro]||rubro.replaceAll('_',' '))+'</td><td>'+safe(etiquetas[estado]||estado)+'</td><td>'+n+'</td><td>'+(100*n/c.total).toFixed(1)+'%</td></tr>')).join('')||'<tr><td colspan="4">Aún no hay respuestas para esta ficha.</td></tr>';
+}
+
+function pintarCamposEstadistica(c){
+ const campos=[['pct_dano','Grado de daño'],['alcance','Alcance'],['tipo','Tipo de evaluación'],['sistema_observado','Sistema resistente'],['irregularidad_estructural','Irregularidad estructural'],['barricada','Barricada'],['eval_detallada','Evaluación detallada requerida']];
+ const textos=[['fundamento','Fundamento'],['limitaciones','Limitaciones'],['restricciones','Restricciones'],['metodo_detallado','Método detallado'],['acciones_otras','Medidas y seguimiento'],['justificacion_alertas','Revisión de alertas'],['observaciones','Observaciones']];
+ const grupos=campos.map(([key,label])=>[label,e=>e[key]===true?'Sí':e[key]===false?'No':String(e[key]??'').trim()||'Sin respuesta']);
+ for(const [key,label] of textos)grupos.push([label,e=>String(e[key]??'').trim()?'Con texto':'Sin texto']);
+ grupos.push(['Registros por elemento',e=>String((e.registros||[]).length)]);
+ const etiquetas={grado_1:'Grado 1',grado_2:'Grado 2',grado_3:'Grado 3',grado_4:'Grado 4',grado_5:'Grado 5',exterior:'Solo exterior',interior_exterior:'Exterior e interior',rapida:'Rápida',detallada:'Detallada'};
+ q('statsFields').innerHTML=grupos.flatMap(([label,valor])=>{const conteos=new Map();for(const r of c.filas){const v=valor(r.evaluacion);conteos.set(v,(conteos.get(v)||0)+1)}return [...conteos].sort(([a],[b])=>a.localeCompare(b)).map(([v,n])=>'<tr><td>'+safe(label)+'</td><td>'+safe(etiquetas[v]||v)+'</td><td>'+n+'</td><td>'+(100*n/c.total).toFixed(1)+'%</td></tr>')}).join('')||'<tr><td colspan="4">Aún no hay respuestas para esta ficha.</td></tr>';
 }

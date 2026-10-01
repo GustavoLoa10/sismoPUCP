@@ -1,4 +1,4 @@
-// Doce expedientes para alumnos. Los casos guiados no contienen fichas resueltas.
+// Expedientes públicos: evidencia y preguntas; sin criterios ni fichas resueltas.
 const TALLER_CASOS=[
   {
     "id": "T09",
@@ -505,15 +505,15 @@ const TALLER_CASOS=[
     "tipo": "practica",
     "documental": true,
     "numero": 6,
-    "titulo": "Edificio Tarqui · lectura de fachada",
+    "titulo": "Edificio Tarqui · Ecuador 2016",
     "ubicacion": "Localidad y dirección por confirmar",
     "eventoId": "PUCP-TARQUI",
-    "evento": "Edificio Tarqui · evento por confirmar",
-    "fechaEvento": "",
+    "evento": "Ecuador · Pedernales · 16/04/2016 · Mw 7.8",
+    "fechaEvento": "2016-04-16T18:58:00-05:00",
     "nivel": "PRÁCTICA 6 · archivo Equipo PUCP",
     "basal": "Edificio de varios niveles con elementos de concreto aparentes y paños de cerramiento; no se confirma el sistema resistente por la fachada.",
     "lecturaVisual": "Compare la vista general con el encuadre de los niveles superiores.",
-    "contexto": "Lectura de fotografías aportadas; no hubo inspección presencial. No se conocen planos, materiales ensayados, condición previa, capacidad residual ni dirección exacta. Las vistas parciales no certifican el estado de otras caras o niveles. La fecha de captura no equivale a la del sismo. Captura EXIF 24/04/2016; no se asume que sea la fecha del sismo.",
+    "contexto": "Lectura de fotografías aportadas; no hubo inspección presencial. No se conocen planos, materiales ensayados, condición previa, capacidad residual ni dirección exacta. Las vistas parciales no certifican el estado de otras caras o niveles. El caso corresponde al terremoto de Ecuador del 16/04/2016, según identificación del aportante. La captura EXIF es del 24/04/2016 y no equivale a la fecha del sismo.",
     "recursos": [
       {
         "id": "T02:aporte:DSC04171.JPG",
@@ -598,42 +598,8 @@ const TALLER_CASOS=[
       "Propón grado del daño visible y restricciones diferenciadas para fachada, balcones y ambientes."
     ],
     "tipo": "practica",
-    "asset": "VE01",
-    "base": 7,
     "eventoId": "VE2026",
     "ubicacion": "Maracay, Aragua, Venezuela",
-    "lectura": "Varios paños de fachada presentan pérdida de material y huecos; se observan fragmentos y un control provisional del frente.",
-    "sistema": "Edificio residencial de concreto aparente con cerramientos de mampostería; estructura principal no evaluable desde la imagen.",
-    "decision": "uso_restringido",
-    "restricciones": "Cerrar balcones, ambientes contiguos y la franja exterior bajo la fachada hasta estabilizar elementos sueltos.",
-    "danos": {
-      "muros": "moderado",
-      "caida_objetos": "si"
-    },
-    "registros": [
-      {
-        "rubro": "muros",
-        "elemento": "Cerramientos de fachada",
-        "ubicacion": "Varios niveles del frente",
-        "patron": "Pérdida de paños y exposición de bordes en cerramientos.",
-        "medicion": "No medida; la fuente fotográfica no aporta escala ni levantamiento.",
-        "mecanismo": "Compatible con respuesta fuera del plano de la mampostería; anclajes por verificar.",
-        "severidad": "moderado",
-        "evidencia": "E01 · fotografía documental incluida."
-      },
-      {
-        "rubro": "caida_objetos",
-        "elemento": "Mampostería y acabados",
-        "ubicacion": "Fachada y planta baja",
-        "patron": "Fragmentos desprendidos y bordes remanentes expuestos.",
-        "medicion": "No medida; la fuente fotográfica no aporta escala ni levantamiento.",
-        "mecanismo": "Peligro de nuevas caídas durante réplicas.",
-        "severidad": "severo",
-        "evidencia": "E01 · fotografía documental incluida."
-      }
-    ],
-    "fundamento": "E01 muestra pérdida de cerramientos en altura y exposición del área inferior; no muestra el estado de columnas, vigas ni otras fachadas.",
-    "accion": "Estabilizar o retirar piezas sueltas, revisar todos los cerramientos y evaluar la estructura desde rutas seguras.",
     "documental": true,
     "fechaEvento": "2026-06-24T23:00",
     "evento": "Venezuela · secuencia sísmica · 24/06/2026",
@@ -725,31 +691,8 @@ const TALLER_CASOS=[
       "¿Cómo se delimita la zona de caída?"
     ],
     "tipo": "practica",
-    "asset": "VE04",
-    "base": 8,
     "eventoId": "VE2026",
     "ubicacion": "Valencia, Carabobo, Venezuela",
-    "lectura": "La fotografía documenta una torre alta; las fisuras reportadas por la fuente no son cuantificables en la imagen general.",
-    "sistema": "Torre histórica de mampostería aparente; interior, campanario, coronación y conexiones no inspeccionados.",
-    "decision": "uso_restringido",
-    "restricciones": "Impedir acceso a la torre y permanencia en su zona de caída potencial hasta evaluación especializada.",
-    "danos": {
-      "parapetos": "moderado"
-    },
-    "registros": [
-      {
-        "rubro": "parapetos",
-        "elemento": "Coronación y elementos altos de la torre",
-        "ubicacion": "Torre de la catedral",
-        "patron": "Fisuras reportadas por la fuente; geometría y abertura no medibles en esta toma.",
-        "medicion": "No medida; la fuente fotográfica no aporta escala ni levantamiento.",
-        "mecanismo": "Posible pérdida localizada de continuidad con peligro asociado a elementos elevados; por verificar.",
-        "severidad": "moderado",
-        "evidencia": "E01 · fotografía documental incluida."
-      }
-    ],
-    "fundamento": "La altura aumenta la consecuencia de un desprendimiento y la vista general no descarta daño oculto; la restricción se limita a torre y perímetro.",
-    "accion": "Inspección cercana con medios seguros, registro de fisuras y revisión de coronación, campanas y conexiones.",
     "documental": true,
     "fechaEvento": "2026-06-24T23:00",
     "evento": "Venezuela · secuencia sísmica · 24/06/2026",
@@ -1190,42 +1133,8 @@ const TALLER_CASOS=[
       "Complete la ficha sin atribuir daños al edificio de comparación. No estime aberturas o porcentaje global sin una base suficiente."
     ],
     "tipo": "practica",
-    "asset": "MX03",
-    "base": 1,
     "eventoId": "MX2017",
     "ubicacion": "Ciudad de México · calle Toluca según el letrero visible; ubicación exacta por verificar",
-    "lectura": "Se observan desprendimientos y daño en cerramientos de los niveles inferiores, con cinta de restricción en el entorno.",
-    "sistema": "Edificio de varios niveles con estructura no confirmada y cerramientos aparentes; solo una fachada documentada.",
-    "decision": "uso_restringido",
-    "restricciones": "Cerrar la franja de fachada y el acceso afectado; no ocupar áreas adyacentes hasta verificar estructura y elementos sueltos.",
-    "danos": {
-      "muros": "moderado",
-      "caida_objetos": "si"
-    },
-    "registros": [
-      {
-        "rubro": "muros",
-        "elemento": "Cerramientos de fachada",
-        "ubicacion": "Niveles inferiores",
-        "patron": "Pérdida localizada de material y discontinuidades en paños de cerramiento.",
-        "medicion": "No medida; la fuente fotográfica no aporta escala ni levantamiento.",
-        "mecanismo": "Compatible con daño fuera del plano o interacción cerramiento-estructura; por confirmar.",
-        "severidad": "moderado",
-        "evidencia": "E01 · fotografía documental incluida."
-      },
-      {
-        "rubro": "caida_objetos",
-        "elemento": "Fragmentos de fachada",
-        "ubicacion": "Acera y acceso",
-        "patron": "Material caído y bordes remanentes potencialmente sueltos.",
-        "medicion": "No medida; la fuente fotográfica no aporta escala ni levantamiento.",
-        "mecanismo": "Desprendimiento desde cerramientos hacia zona de paso.",
-        "severidad": "severo",
-        "evidencia": "E01 · fotografía documental incluida."
-      }
-    ],
-    "fundamento": "E01 evidencia material desprendido en la fachada y un control de acceso; la estructura interior no es visible.",
-    "accion": "Retirar elementos sueltos bajo procedimiento seguro y evaluar estructura, fachadas restantes y circulación interior.",
     "documental": true,
     "fechaEvento": "2017-09-19T13:14",
     "evento": "México · sismo de Puebla · 19/09/2017",
@@ -1289,7 +1198,6 @@ const TALLER_CASOS=[
     ]
   }
 ];
-const TALLER_PRACTICAS=TALLER_CASOS;
 const TALLER_EVENTOS_DOCUMENTALES=[
   {
     "uuid": "MX2017",
@@ -1313,9 +1221,9 @@ const TALLER_EVENTOS_DOCUMENTALES=[
   },
   {
     "uuid": "PUCP-TARQUI",
-    "nombre": "Edificio Tarqui · evento por confirmar",
-    "fecha": "",
-    "referencia": "Captura EXIF 24/04/2016; no se asume que sea la fecha del sismo."
+    "nombre": "Ecuador · Pedernales · 16/04/2016 · Mw 7.8",
+    "fecha": "2016-04-16T18:58:00-05:00",
+    "referencia": "Caso identificado por el aportante como Ecuador 2016. Captura EXIF 24/04/2016. https://www.igepn.edu.ec/servicios/noticias/1317-informe-sismico-especial-n-13-2016"
   },
   {
     "uuid": "PUCP-LOTE2-hospital-ies",
@@ -1342,3 +1250,4 @@ const TALLER_EVENTOS_DOCUMENTALES=[
     "referencia": "Fuentes documentales del expediente"
   }
 ];
+const TALLER_PRACTICAS=TALLER_CASOS.filter(c=>c.tipo==='practica');

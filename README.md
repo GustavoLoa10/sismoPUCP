@@ -1,6 +1,6 @@
 # sismoPUCP
 
-Taller para alumnos: ocho prácticas T01–T08, fotografías originales, fichas vacías, borradores locales y envío directo. El sitio de publicación está en `docs/`. Los ejemplos resueltos y sus soluciones no están incluidos en esa carpeta.
+Taller para alumnos: doce prácticas T01–T12, fotografías originales, fichas vacías, borradores locales y envío directo. El sitio de publicación está en `docs/`. Los ejemplos resueltos y sus soluciones no están incluidos en esa carpeta.
 
 ## Activar la recepción de entregas
 
@@ -14,7 +14,7 @@ La contraseña del usuario docente es distinta de la contraseña de PostgreSQL. 
 
 ## Uso
 
-Los alumnos introducen su nombre y Código PUCP en la cabecera fija, finalizan cada ficha y pulsan Enviar al instructor. La identidad de cada evaluación se toma de esa cabecera. Se entregan entre una y ocho fichas finalizadas, sin fotografías añadidas ni borradores. Cada envío recibe un comprobante; un reintento idéntico usa el mismo ID. Las modificaciones requieren finalizar de nuevo y generan otra entrega, conservando el historial.
+Los alumnos introducen su nombre y Código PUCP en la cabecera fija, finalizan cada ficha y pulsan Enviar al instructor. La identidad de cada evaluación se toma de esa cabecera. Se entregan entre una y doce fichas finalizadas, sin fotografías añadidas ni borradores. Cada envío recibe un comprobante; un reintento idéntico usa el mismo ID. Las modificaciones requieren finalizar de nuevo y generan otra entrega, conservando el historial.
 
 El panel docente requiere un usuario autorizado en `taller_docentes`, permite consultar entregas, descargar un CSV completo y abrir o cerrar la sesión de entregas. Las sesiones de acceso se mantienen en memoria. Las respuestas nunca se guardan en GitHub.
 
@@ -24,6 +24,14 @@ Las tablas tienen RLS. Los alumnos no pueden leer entregas, ni insertar o modifi
 
 ## Validación
 
-Se verificaron en Edge las ocho prácticas, sus imágenes, formularios vacíos, navegación, persistencia de borradores, exportación y diseño móvil. Se verificaron con un servidor simulado la finalización, envío, reintentos, errores de red, acceso docente, escape del contenido y CSV compatible con Excel.
+Se verificaron en Edge las doce prácticas, sus imágenes, formularios vacíos, navegación, persistencia de borradores, exportación y diseño móvil. Se verificaron con un servidor simulado la finalización, envío, reintentos, errores de red, acceso docente, escape del contenido y CSV compatible con Excel.
 
 Pendiente: ejecutar los scripts SQL en el proyecto Supabase y comprobar de extremo a extremo la entrega y los permisos reales antes de compartir el enlace con alumnos.
+
+## Revisión de seguridad (01/10/2026)
+
+Se retiraron criterios sugeridos residuales de tres casos del JavaScript público. Los contenidos ya publicados pueden persistir en copias y en el historial Git; retirar la versión actual no revoca esas copias. Toda fotografía, expediente y código servido por GitHub Pages se puede descargar.
+
+Las entregas incluyen todos los campos de la evaluación finalizada excepto fotos y fotoMetadatos. La función limita cada entrega a 200000 bytes de respuestas y 4000 bytes de participante; 100 entregas suman como máximo aproximadamente 20.4 MB de JSON, más índices y metadatos. Los reenvíos modificados conservan historial y consumen espacio adicional.
+
+El código de sesión es público y permite enviar: no autentica la identidad del alumno. Un visitante puede suplantar un Código PUCP o generar muchos envíos. Para identidad verificable y control de abuso hace falta autenticación de alumnos y límites de envío en servidor. Las estadísticas cargan todas las páginas y usan la última respuesta por alumno, sesión y caso; los textos completos quedan en detalle y CSV.
