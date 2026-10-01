@@ -41,3 +41,5 @@ q('acceptDeleteTrial').onclick=async()=>{
  finally{borradoEnCurso=false;q('acceptDeleteTrial').disabled=false;q('cancelDeleteTrial').disabled=false;}
 };
 q('deleteTrialDialog').addEventListener('close',()=>{pruebaPorEliminar=null;q('deleteTrialError').textContent='';});
+
+q('expectedStudents').onchange=guardarAlumnosEsperados;
