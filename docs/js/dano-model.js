@@ -2,7 +2,7 @@
 const DANO_EXTRA_ESTADOS=[['no_determinado','No determinado']];
 const ALCANCES=[['','Seleccionar alcance'],['exterior','Solo exterior'],['interior_exterior','Exterior e interior']];
 const DANO_LABELS={ninguno:'Sin daño observado',leve:'Leve',moderado:'Moderado',severo:'Severo',parcial:'Parcial',total:'Total',no:'No observado',si:'Sí observado',no_inspeccionado:'No inspeccionado',no_aplica:'No aplicable',no_determinado:'No determinado'};
-function normalizarDano(d){return {...d,schemaVersion:2,alcance:d.alcance||'',limitaciones:d.limitaciones||'',sistema_observado:d.sistema_observado||'',fundamento:d.fundamento||'',restricciones:d.restricciones||'',metodo_detallado:d.metodo_detallado||'',justificacion_alertas:d.justificacion_alertas||'',danos:{...(d.danos||{})},registros:(d.registros||[]).map(r=>({...r})),fotos:(d.fotos||[]).map(p=>typeof p==='object'?{...p}:p)};}
+function normalizarDano(d){return {...d,schemaVersion:2,alcance:d.alcance||'',limitaciones:d.limitaciones||'',sistema_observado:d.sistema_observado||'',irregularidad_estructural:d.irregularidad_estructural||'',fundamento:d.fundamento||'',restricciones:d.restricciones||'',metodo_detallado:d.metodo_detallado||'',justificacion_alertas:d.justificacion_alertas||'',danos:{...(d.danos||{})},registros:(d.registros||[]).map(r=>({...r})),fotos:(d.fotos||[]).map(p=>typeof p==='object'?{...p}:p)};}
 function nuevoRegistroDano(){return {id:uuid(),rubro:'',elemento:'',ubicacion:'',patron:'',medicion:'',mecanismo:'',severidad:'',evidencia:''};}
 function validarDano(d){
   const errores=[],avisos=[], texto=v=>typeof v==='string'&&v.trim().length>0;

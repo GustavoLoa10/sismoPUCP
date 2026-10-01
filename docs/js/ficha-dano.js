@@ -1,5 +1,5 @@
 // Ficha de daño v2: observación, interpretación y decisión trazables.
-function evalsOf(key){return (S.evalsByBuilding[key]||[]).slice().sort((a,b)=>String(b.fecha||b.updatedAt).localeCompare(String(a.fecha||a.updatedAt)))}
+function evalsOf(key){return (S.evalsByBuilding[key]||[]).slice().sort((a,b)=>String(b.fecha||b.updatedAt).localeCompare(String(a.fecha||a.updatedAt))||String(b.updatedAt||b.fecha).localeCompare(String(a.updatedAt||a.fecha)))}
 function latestEval(key){let arr=evalsOf(key).filter(e=>e.estadoRegistro!=='anulada');if(S.eventoId)arr=arr.filter(e=>e.eventoId===S.eventoId);return arr[0]||null}
 function coordPuede(){return typeof puedeCoordinar==='function'?puedeCoordinar():true}
 function evalPuede(ev){return typeof puedeModificarEvaluacion==='function'?puedeModificarEvaluacion(ev):true}
@@ -16,10 +16,11 @@ function danoLegendHTML(){
   return `<aside class="dano-leyenda" aria-label="Leyenda de estados de daño"><div>${items.map(([c,t])=>`<span><strong>${c}</strong>${esc(t)}</span>`).join('')}</div></aside>`;
 }
 function danoInput(key,label,value,textarea=false){return `<label for="ev_${key}">${esc(label)}</label>${textarea?`<textarea id="ev_${key}">${esc(value)}</textarea>`:`<input id="ev_${key}" value="${attr(value)}">`}`}
-const SISTEMAS_RESISTENTES_DANO=['Pórticos de concreto armado','Muros de concreto armado','Sistema dual de concreto armado (pórticos y muros)','Albañilería confinada','Albañilería armada','Albañilería no reforzada','Adobe','Tapial','Mampostería de piedra','Estructura de acero','Estructura de madera','Sistema mixto','Otro sistema','No determinado'];
+const SISTEMAS_RESISTENTES_DANO=['Pórticos/Dual/Muros de Concreto Armado','Albañilería confinada/armada','Adobe/Tapial','Pórticos metálicos','Pórticos metálicos con arriostres'];
+const IRREGULARIDADES_ESTRUCTURALES=['Ninguna','Discontinuidad de diafragma','Torsión','Discontinuidad vertical','Piso Blando'];
 function sistemaResistenteHTML(valor=''){
  const opciones=[['','— Seleccione —'],...SISTEMAS_RESISTENTES_DANO.map(v=>[v,v])];
- if(valor&&!SISTEMAS_RESISTENTES_DANO.includes(valor))opciones.push([valor,valor]);
+ if(valor&&!SISTEMAS_RESISTENTES_DANO.includes(valor))opciones.push([valor,valor+' · registro anterior']);
  return `<div class="field-inline"><label for="ev_sistema_observado">Sistema resistente aparente *</label><div class="system-guide-control"><select id="ev_sistema_observado">${opts(opciones,valor)}</select><button id="btnGradeGuide" type="button" aria-label="Ampliar guía visual de los cinco grados de daño" title="Ver los cinco grados de daño"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M17 17l8 8M7 11h8M11 7v8"/></svg></button></div></div>`;
 }
 function opcionesDanoGlobalTaller(valor){
@@ -43,6 +44,7 @@ function danoFormHTML(f,datos=S.draft){
   <h3>2 · Alcance y edificio</h3>
   <div class="field-inline"><label for="ev_alcance">Áreas inspeccionadas *</label><select id="ev_alcance">${opts(ALCANCES.map(([v,t])=>[v,v?t:'— Seleccione —']),d.alcance)}</select></div>
   ${sistemaResistenteHTML(d.sistema_observado)}
+  <div class="field-inline"><label for="ev_irregularidad_estructural">Irregularidad estructural</label><select id="ev_irregularidad_estructural">${opts([['','— Seleccione —'],...IRREGULARIDADES_ESTRUCTURALES.map(v=>[v,v])],d.irregularidad_estructural)}</select></div>
   ${danoInput('limitaciones','Zonas no inspeccionadas, peligros de acceso e información faltante',d.limitaciones,true)}
   <h3>3 · Observar los daños</h3>${danoLegendHTML()}<div id="danoGrupos">${grupos}</div>
   <h3>4 · Documentar e interpretar</h3>
@@ -80,7 +82,7 @@ function renderRegistrosDano(){
 function wireDanoForm(f){
   const activeDraft=S.draft;
   const bind=(key,prop=key)=>{const el=id('ev_'+key);if(!el)return;el.oninput=el.onchange=()=>{if(S.draft!==activeDraft||!el.isConnected)return;S.draft[prop]=el.type==='checkbox'?el.checked:el.value;saveDraftDebounced()}};
-  for(const key of ['evaluador','cip','tipo','fecha','alcance','sistema_observado','limitaciones','fundamento','restricciones','metodo_detallado','justificacion_alertas','barricada'])bind(key);
+  for(const key of ['evaluador','cip','tipo','fecha','alcance','sistema_observado','irregularidad_estructural','limitaciones','fundamento','restricciones','metodo_detallado','justificacion_alertas','barricada'])bind(key);
   for(const [key,prop] of [['evento','eventoId'],['pct','pct_dano'],['detallada','eval_detallada'],['acciones','acciones_otras'],['obs','observaciones']])bind(key,prop);
   wireGuiaGrados();
   id('habGrid').onclick=e=>{if(PANCARTA_GRADO[S.draft.pct_dano])return;const b=e.target.closest('.habbtn');if(!b)return;S.draft.habitabilidad=b.dataset.v;for(const x of id('habGrid').children){x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))}saveDraftDebounced()};
