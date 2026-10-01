@@ -1,5 +1,5 @@
 const PERFIL_TALLER_KEY='sismolima:taller:perfil:v1';
-const S={eventos:TALLER_EVENTOS_DOCUMENTALES.map(e=>({...e})),eventoId:TALLER_EVENTOS_DOCUMENTALES[0].uuid,evalsByBuilding:{},features:[],selected:'',draft:null,perfil:{nombre:'',institucion:'',equipo:''}};
+const S={eventos:TALLER_EVENTOS_DOCUMENTALES.map(e=>({...e})),eventoId:TALLER_EVENTOS_DOCUMENTALES[0].uuid,evalsByBuilding:{},features:[],selected:'',draft:null,perfil:{nombre:'',codigoPUCP:'',institucion:'',equipo:''}};
 let BANCO_ACTIVO='practica';
 function casosBanco(){return TALLER_PRACTICAS}
 function featureTaller(c){return {properties:{key:'TALLER-'+c.id,local_id:c.id,osm:{name:c.titulo,address:c.ubicacion||'Ubicación documentada en la fuente'}}}}
@@ -113,36 +113,25 @@ function detallesExpedienteTaller(c){
 }
 function cargarPerfilTaller(){
  try{S.perfil={...S.perfil,...JSON.parse(localStorage.getItem(PERFIL_TALLER_KEY)||'{}')}}catch{}
- id('participantName').value=S.perfil.nombre||'';id('participantInstitution').value=S.perfil.institucion||'';id('participantTeam').value=S.perfil.equipo||'';
+ id('participantName').value=S.perfil.nombre||'';id('participantPUCP').value=S.perfil.codigoPUCP||'';id('participantInstitution').value=S.perfil.institucion||'';id('participantTeam').value=S.perfil.equipo||'';
 }
 function guardarPerfilTaller(){
- S.perfil={nombre:id('participantName').value.trim(),institucion:id('participantInstitution').value.trim(),equipo:id('participantTeam').value.trim()};
+ S.perfil={nombre:id('participantName').value.trim(),codigoPUCP:id('participantPUCP').value.trim(),institucion:id('participantInstitution').value.trim(),equipo:id('participantTeam').value.trim()};
  const boton=id('btnSaveProfile');
  try{localStorage.setItem(PERFIL_TALLER_KEY,JSON.stringify(S.perfil));id('profileStatus').textContent='Datos guardados en este dispositivo.';boton.textContent='Guardado ✓';clearTimeout(boton._feedbackTimer);boton._feedbackTimer=setTimeout(()=>boton.textContent='Guardar datos',1600)}catch(err){id('profileStatus').textContent='No se pudieron guardar: '+err.message;boton.textContent='Reintentar guardar'}
- if(casoActivo()?.tipo==='practica'&&S.draft&&!S.draft.evaluador&&S.perfil.nombre){S.draft.evaluador=S.perfil.nombre;showSelected()}
+ if(S.draft){S.draft.evaluador=S.perfil.nombre;S.draft.codigoPUCP=S.perfil.codigoPUCP;} actualizarAvisoPerfil();
 }
 async function cambiarBanco(){
  BANCO_ACTIVO='practica';document.body.dataset.bank='practica';
  const casos=casosBanco();id('caseSelect').innerHTML=opts(casos.map(c=>[c.id,c.id+' · '+c.titulo]),casos[0].id);id('caseSelect').value=casos[0].id;
  id('resumenTaller').hidden=true;await seleccionarCaso();
 }
-function configurarAccionesCaso(c){
- const resuelto=c.tipo==='resuelto',print=id('btnPrintAttempt'),data=id('btnExportAttempt');
- print.textContent=resuelto?'Exportar esta ficha resuelta':'Exportar esta práctica';
- data.textContent=resuelto?'Descargar ficha resuelta (JSON)':'Descargar datos de esta práctica';
- print.onclick=()=>exportarTallerPDF({casos:[c],contenido:'practicas',titulo:c.id+' · Práctica del participante'});
- data.onclick=async()=>{try{
-  await Storage._draftQueue;
-  const evaluaciones=evalsOf(S.selected),fotos=[];for(const ev of evaluaciones)fotos.push(...await fotosDe(ev));const recursosDidacticos=(await Storage.all('recursos_taller')).filter(x=>x.caseId===c.id);
-  download(c.id+'_practica.json',JSON.stringify({training:true,documental:true,version:4,participante:S.perfil,caso:c.id,fuentes:c.fuentes,exportedAt:nowISO(),evaluaciones,fotos,borrador:Storage.loadDraft(S.selected),recursosDidacticos},null,2),'application/json');
- }catch(err){alert('No se pudo exportar la ficha: '+err.message)}};
-}
 async function seleccionarCaso(){
   pararRecorridoTaller();
   const c=TALLER_CASOS.find(c=>c.id===id('caseSelect').value);if(!c)return;S.selected='TALLER-'+c.id;S.eventoId=c.eventoId;
   id('expediente').innerHTML=`<header class="expediente-cabecera"><p class="eyebrow">${esc(c.id)} · ${esc(c.nivel)}</p><h2>${esc(c.titulo)}</h2><p class="expediente-meta"><b>${esc(c.evento)}</b><span>${esc(c.ubicacion)}</span></p></header>${evidenciaVisualTaller(c)}${recorridoHTMLTaller(c)}${detallesExpedienteTaller(c)}`;
   const resuelto=c.tipo==='resuelto';document.querySelector('.taller-solution')?.classList.toggle('resolved-mode',resuelto);
-  wireGaleriaTaller(c);wireRecorridoTaller(c);await renderGaleriaTaller(c);showSelected();configurarAccionesCaso(c);renderRuta();status(resuelto?`Ejemplo ${c.id} listo: ficha documental completa y exportable.`:`Práctica ${c.id} lista. El borrador se guarda automáticamente en este dispositivo.`);
+  wireGaleriaTaller(c);wireRecorridoTaller(c);await renderGaleriaTaller(c);showSelected();renderRuta();status(resuelto?`Ejemplo ${c.id} listo: ficha documental completa y exportable.`:`Práctica ${c.id} lista. El borrador se guarda automáticamente en este dispositivo.`);
 }
 function tablaFichaTaller(ev){
   return `<table>${repFila('Evaluador',ev.evaluador)}${repFila('CIP / referencia',ev.cip||'N/D')}${repFila('Evento',S.eventos.find(e=>e.uuid===ev.eventoId)?.nombre||ev.eventoId||'N/D')}${repFila('Fecha',fmtFecha(ev.fecha))}${repFila('Tipo',ev.tipo)}${repFila('Alcance',ev.alcance==='exterior'?'Solo exterior':'Exterior e interior')}${repFila('Sistema y fuente',ev.sistema_observado)}${repFila('Limitaciones',ev.limitaciones)}${repFila('Decisión',HAB_LABEL[ev.habitabilidad]||'Pendiente')}${repFila('Fundamento',ev.fundamento)}${repFila('Restricciones',ev.restricciones)}${repFila('Daño global',PCT_LABEL[ev.pct_dano]||'Sin estimar')}${repFila('Barricada',ev.barricada?'Sí':'No')}${repFila('Evaluación detallada',ev.eval_detallada?'Sí':'No')}${repFila('Método',ev.metodo_detallado)}${repFila('Medidas y seguimiento',ev.acciones_otras)}${repFila('Revisión de alertas',ev.justificacion_alertas)}${repFila('Observaciones',ev.observaciones)}</table><h3>Resumen por rubro</h3><table>${DANO_GRUPOS.flatMap(([,a])=>a).map(([k,t])=>repFila(t,sevTitle(ev.danos?.[k]||'Pendiente'))).join('')}</table>${reporteRegistrosDano(ev)}`;
@@ -151,14 +140,11 @@ async function iniciarTaller(){
  try{
   await Storage.open();await Storage.initDrafts();
   for(const ev of await Storage.all('evaluaciones'))(S.evalsByBuilding[ev.buildingKey]||(S.evalsByBuilding[ev.buildingKey]=[])).push(ev);
-  S.features=TALLER_CASOS.map(featureTaller);cargarPerfilTaller();wireVisorImagen();
+  S.features=TALLER_CASOS.map(featureTaller);cargarPerfilTaller();iniciarCabeceraFija();wireVisorImagen();
   id('caseSelect').disabled=false;id('caseSelect').onchange=seleccionarCaso;
-  id('btnBankPractice').onclick=()=>cambiarBanco();
-  id('btnSaveProfile').onclick=guardarPerfilTaller;for(const k of ['participantName','participantInstitution','participantTeam'])id(k).onchange=guardarPerfilTaller;
+  id('btnSaveProfile').onclick=guardarPerfilTaller;for(const k of ['participantName','participantPUCP','participantInstitution','participantTeam'])id(k).oninput=id(k).onchange=guardarPerfilTaller;
   id('btnPrev').onclick=()=>navegarCaso(-1);id('btnNext').onclick=()=>navegarCaso(1);
   id('btnResumen').onclick=()=>{const box=id('resumenTaller');box.hidden=!box.hidden;id('btnResumen').setAttribute('aria-expanded',String(!box.hidden));if(!box.hidden)mostrarResumen()};
-  id('btnPrintAttempt').disabled=false;id('btnExportAttempt').disabled=false;
-  id('btnExportAllPDF').disabled=false;id('btnExportAllPDF').onclick=()=>exportarTallerPDF({casos:TALLER_PRACTICAS,contenido:'practicas',titulo:'sismoPUCP · Mis ocho prácticas'});
   await cambiarBanco();
  }catch(err){status('No se pudo abrir el taller: '+err.message);id('status').classList.remove('sr-only')}
 }
@@ -167,4 +153,14 @@ iniciarTaller();
 function comparacionesCasoHTML(c){
  if(!c.comparaciones?.length)return '';
  return `<details class="comparaciones-caso"><summary><span>Comparaciones de contexto</span><small>${c.comparaciones.length} imágenes · otros inmuebles o identidad sin confirmar</small></summary><div class="expediente-detalle"><p><b>Estas imágenes no acreditan otras vistas del inmueble evaluado.</b> No traslade sus daños a la ficha principal.</p>${c.comparaciones.map(r=>`<figure><img loading="lazy" src="${attr(r.src)}" alt="${attr(r.titulo)}" style="width:100%;height:auto"><figcaption><b>${esc(r.titulo)}</b><p>${esc(r.descripcion)}</p><a href="${attr(r.fuente)}" target="_blank" rel="noopener">Fuente original</a> · ${esc(r.autor||'')} · ${esc(r.licencia||'')}</figcaption></figure>`).join('')}</div></details>`;
+}
+
+function actualizarAvisoPerfil(){
+ const completos=!!(id('participantName').value.trim()&&id('participantPUCP').value.trim());
+ id('participantDock').classList.toggle('profile-incomplete',!completos);
+ id('profileStatus').textContent=completos?'Datos guardados en este dispositivo.':'Completa tu nombre y Código PUCP antes de finalizar las fichas.';
+}
+function iniciarCabeceraFija(){
+ const dock=id('participantDock');const medir=()=>document.documentElement.style.setProperty('--dock-height',Math.ceil(dock.getBoundingClientRect().height)+'px');
+ new ResizeObserver(medir).observe(dock);medir();actualizarAvisoPerfil();
 }

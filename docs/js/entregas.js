@@ -3,8 +3,9 @@ let envioEnCurso=false;
 function mensajeEntrega(texto){id('deliveryStatus').textContent=texto;}
 async function prepararEntrega(){
  await Storage._draftQueue;
- const participante={nombre:id('participantName').value.trim(),institucion:id('participantInstitution').value.trim(),equipo:id('participantTeam').value.trim()};
+ const participante={nombre:id('participantName').value.trim(),codigoPUCP:id('participantPUCP').value.trim(),institucion:id('participantInstitution').value.trim(),equipo:id('participantTeam').value.trim()};
  if(participante.nombre.length<2)throw Error('Escribe tu nombre y apellidos antes de entregar.');
+ if(!participante.codigoPUCP)throw Error('Escribe tu Código PUCP antes de entregar.');
  const respuestas=[];
  for(const c of TALLER_PRACTICAS){
   const key='TALLER-'+c.id,ev=evalsOf(key).find(e=>e.estadoRegistro!=='anulada'&&e.eventoId===c.eventoId);
@@ -24,7 +25,7 @@ async function prepararEntrega(){
 async function enviarEntrega(){
  if(envioEnCurso)return;envioEnCurso=true;id('btnSendDelivery').disabled=true;
  try{
-  const codigo=id('deliveryCode').value.trim().toUpperCase();if(codigo.length<8)throw Error('Introduce el código de sesión que te dio el instructor.');
+  const codigo=ENTREGAS_CONFIG.sessionCode;if(!codigo)throw Error('No está configurado el taller de destino.');
   const data=await prepararEntrega();
   if(!confirm('Enviar '+data.respuestas.length+' de 8 fichas finalizadas al instructor. Las fotografías añadidas y los borradores no se enviarán. ¿Continuar?'))return;
   const contenido=JSON.stringify({codigo,...data}),huella=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(contenido)))).map(x=>x.toString(16).padStart(2,'0')).join('');

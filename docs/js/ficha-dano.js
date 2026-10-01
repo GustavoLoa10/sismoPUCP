@@ -37,7 +37,7 @@ function danoFormHTML(f,datos=S.draft){
   ${prev.length?`<details><summary>Evaluaciones previas (${prev.length})</summary><div id="prevEvals">${prevHTML}</div></details>`:`<div id="prevEvals" hidden></div>`}
   <div id="draftStatus" class="save-status${modoTaller?' sr-only':''}" role="status">${Storage.loadDraft(d.buildingKey)?'Borrador recuperado del dispositivo.':'Nueva evaluación. Los cambios se guardan en este dispositivo.'}</div>
   <h3>1 · Identificar</h3><p><b>${esc(d.local_id)}</b> · ${esc(d.direccion||'Dirección no disponible')}</p>
-  ${danoInput('evaluador','Evaluador *',d.evaluador)}${danoInput('cip','CIP',d.cip)}
+
   <label for="ev_evento">Evento</label><select id="ev_evento">${opts([['','Sin evento'],...S.eventos.map(e=>[e.uuid,e.nombre])],d.eventoId)}</select>
   <div class="grid2"><div><label for="ev_tipo">Tipo</label><select id="ev_tipo">${opts(TIPO_EVAL,d.tipo)}</select></div><div><label for="ev_fecha">Fecha y hora</label><input id="ev_fecha" type="datetime-local" value="${attr(d.fecha?.includes('Z')?fechaLocalDano(d.fecha):d.fecha)}"></div></div>
   <h3>2 · Alcance y edificio</h3>
@@ -79,7 +79,7 @@ function renderRegistrosDano(){
 }
 function wireDanoForm(f){
   const activeDraft=S.draft;
-  const bind=(key,prop=key)=>{const el=id('ev_'+key);el.oninput=el.onchange=()=>{if(S.draft!==activeDraft||!el.isConnected)return;S.draft[prop]=el.type==='checkbox'?el.checked:el.value;saveDraftDebounced()}};
+  const bind=(key,prop=key)=>{const el=id('ev_'+key);if(!el)return;el.oninput=el.onchange=()=>{if(S.draft!==activeDraft||!el.isConnected)return;S.draft[prop]=el.type==='checkbox'?el.checked:el.value;saveDraftDebounced()}};
   for(const key of ['evaluador','cip','tipo','fecha','alcance','sistema_observado','limitaciones','fundamento','restricciones','metodo_detallado','justificacion_alertas','barricada'])bind(key);
   for(const [key,prop] of [['evento','eventoId'],['pct','pct_dano'],['detallada','eval_detallada'],['acciones','acciones_otras'],['obs','observaciones']])bind(key,prop);
   id('habGrid').onclick=e=>{const b=e.target.closest('.habbtn');if(!b)return;S.draft.habitabilidad=b.dataset.v;for(const x of id('habGrid').children){x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))}saveDraftDebounced()};
@@ -111,6 +111,8 @@ function renderFotoThumbs(){
 function compressPhoto(file){return new Promise((res,rej)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{try{let w=img.width,h=img.height,max=1600;if(w>h&&w>max){h=Math.round(h*max/w);w=max}else if(h>max){w=Math.round(w*max/h);h=max}const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);res(cv.toDataURL('image/jpeg',.85))}catch(e){rej(e)}finally{URL.revokeObjectURL(url)}};img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('Imagen no válida'))};img.src=url})}
 async function fotosDe(ev){const out=[];for(const fu of ev.fotos||[]){const rec=await Storage.get('fotos',fu);if(rec)out.push({...rec,...(ev.fotoMetadatos||{})[fu]})}return out}
 async function saveEval(f){
+  guardarPerfilTaller();if(!S.perfil.nombre||!S.perfil.codigoPUCP){actualizarAvisoPerfil();id(!S.perfil.nombre?'participantName':'participantPUCP').focus();return;}
+  S.draft.evaluador=S.perfil.nombre;S.draft.codigoPUCP=S.perfil.codigoPUCP;
   const d=S.draft;if(d._photosLoading){alert('Espere a que terminen de guardarse las fotografías.');return}
   const anterior=evalsOf(d.buildingKey).find(e=>e.uuid===d.uuid),eraEdicion=!!anterior;
   if(eraEdicion&&!evalPuede(anterior)){alert('Esta evaluación pertenece a otro usuario. Solicite la modificación al coordinador.');return}

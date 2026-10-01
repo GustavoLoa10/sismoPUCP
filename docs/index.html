@@ -14,70 +14,39 @@
     <span class="training-badge">ENTRENAMIENTO · CASOS REALES Y SIMULACIONES</span>
   </header>
   <main class="taller-main">
-<section class="taller-acceso" aria-labelledby="datosParticipanteTitulo">
-      <div class="card-accent" aria-hidden="true"></div>
-      <div class="taller-acceso-titulo"><p class="eyebrow">PASO 1</p><h2 id="datosParticipanteTitulo">Datos del participante</h2></div>
-      <div class="perfil-grid">
-        <label>Nombre y apellidos<input id="participantName" autocomplete="name" maxlength="120" placeholder="Ej. Ana Pérez"></label>
-        <label>Institución<input id="participantInstitution" autocomplete="organization" maxlength="120" placeholder="Municipalidad, universidad, empresa…"></label>
-        <label>Equipo o mesa<input id="participantTeam" maxlength="80" placeholder="Ej. Mesa 3"></label>
-      </div>
-      <div class="perfil-acciones"><button type="button" id="btnSaveProfile">Guardar datos</button><span id="profileStatus" class="sr-only" role="status"></span></div>
-    </section>
-
-    <section class="taller-intro" aria-labelledby="selectorTitulo">
-      <div class="card-accent" aria-hidden="true"></div>
-      <div class="taller-intro-top">
-        <div><p class="eyebrow">PASO 2 · COMPLETE LAS OCHO PRÁCTICAS</p><h2 id="selectorTitulo">Llenado de fichas</h2></div>
-        <div class="bank-tabs" role="tablist" aria-label="Bancos del taller" aria-describedby="bankHelp">
-          <button type="button" id="btnBankPractice" role="tab" aria-selected="true">Prácticas para llenar <b>8</b></button>
-        </div>
-      </div>
-      <p id="bankHelp" class="sr-only">Complete su propia evaluación. El formulario guarda el borrador automáticamente en este dispositivo.</p>
-      <label for="caseSelect" class="sr-only">Elegir caso</label>
-      <div class="selector-navegacion">
-        <select id="caseSelect" disabled></select>
-        <div class="ruta-acciones">
-          <button id="btnPrev" disabled>← Caso anterior</button>
-          <button id="btnNext" disabled>Caso siguiente →</button>
-          <button id="btnResumen" aria-expanded="false">Resumen de mis resultados</button>
-        </div>
-      </div>
-      <p id="status" class="sr-only" role="status">Preparando el taller…</p>
-    </section>
-
-      <div class="ruta-taller">
-        <div class="ruta-resumen sr-only"><b id="progressText">0 de 8 completados</b><span>El progreso se guarda en este dispositivo.</span></div>
-        <div id="caseChips" class="casos-chips" aria-label="Progreso de casos"></div>
-
-      </div>
-
-    <section class="paso-ficha" aria-labelledby="selectorTitulo">
+<div class="participant-dock" id="participantDock">
+ <section class="taller-acceso participant-profile" aria-labelledby="datosParticipanteTitulo">
+  <h2 id="datosParticipanteTitulo">Datos del participante</h2>
+  <div class="perfil-grid">
+   <label>Nombre y apellidos *<input id="participantName" autocomplete="name" maxlength="120" placeholder="Nombre y apellidos" required></label>
+   <label>Código PUCP *<input id="participantPUCP" autocomplete="off" maxlength="20" placeholder="Código PUCP" required></label>
+   <label>Institución<input id="participantInstitution" autocomplete="organization" maxlength="120" placeholder="Universidad o institución"></label>
+   <label>Equipo o mesa<input id="participantTeam" maxlength="80" placeholder="Ej. Mesa 3"></label>
+   <button type="button" id="btnSaveProfile">Guardar datos</button>
+  </div>
+  <span id="profileStatus" role="status" aria-live="polite"></span>
+ </section>
+ <nav class="ruta-taller participant-route" aria-label="Elegir una de las ocho fichas">
+  <div class="ruta-resumen sr-only"><b id="progressText">0 de 8 completados</b></div>
+  <div id="caseChips" class="casos-chips" aria-label="Progreso de casos"></div>
+  <button id="btnResumen" aria-expanded="false">Resumen</button>
+ </nav>
+ <select id="caseSelect" hidden disabled aria-label="Elegir caso"></select>
+ <button id="btnPrev" hidden disabled>Anterior</button><button id="btnNext" hidden disabled>Siguiente</button>
+ <p id="status" class="sr-only" role="status">Preparando el taller…</p>
+</div>
+    <section class="paso-ficha" aria-label="Ficha de evaluación">
       <div class="taller-layout">
         <section id="expediente" aria-label="Expediente del caso"></section>
         <section class="taller-form" aria-label="Ficha de evaluación">
           <div id="sel"></div>
-          <div class="taller-actions"><button id="btnPrintAttempt" disabled>Exportar esta ficha</button><button id="btnExportAttempt" disabled>Descargar datos de esta ficha</button></div>
         </section>
       </div>
       <section id="resumenTaller" class="taller-resumen" hidden></section>
     </section>
-
-    <section class="exportacion-taller" aria-labelledby="exportTitle">
-      <header class="exportacion-taller-cabecera"><span><small>PASO 3</small><strong id="exportTitle">Exportaciones finales</strong></span></header>
-      <div class="exportacion-contenido" aria-labelledby="exportTitle">
-        <div class="export-controls">
-          <label for="exportContenido" class="sr-only">Contenido de las prácticas</label>
-          <select id="exportContenido"><option value="practicas">Mis fichas y borradores</option></select>
-          <button type="button" id="btnExportAllPDF" disabled>Exportar mis 8 prácticas</button>
-        </div>
-      </div>
-      <p id="exportPDFStatus" class="sr-only" role="status">En la ventana de impresión, elija “Guardar como PDF”.</p>
-    </section>
     <section class="taller-acceso entrega-alumnos" aria-labelledby="deliveryTitle">
       <div class="card-accent" aria-hidden="true"></div><h2 id="deliveryTitle">Entregar al instructor</h2>
       <p>Finaliza tus fichas y envía las que hayas completado. Los borradores y las fotografías añadidas permanecen en este dispositivo.</p>
-      <label for="deliveryCode">Código de sesión</label><input id="deliveryCode" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Código proporcionado por el instructor">
       <button id="btnSendDelivery" type="button">Enviar al instructor</button>
       <p id="deliveryStatus" role="status" aria-live="polite">Aún no has enviado tus respuestas.</p>
     </section>
@@ -105,7 +74,7 @@
   <script>globalThis.SISMO_TALLER=true;</script>
   <script src="js/util.js"></script><script src="js/config.js"></script><script src="js/storage.js"></script><script src="js/dano-model.js"></script><script src="js/ficha-dano.js"></script><script src="js/reportes.js"></script>
   <script src="js/taller-alumnos-casos.js"></script>
-  <script src="js/taller-recorridos.js"></script><script src="js/taller-export.js"></script><script src="js/taller-360.js"></script><script src="js/taller.js"></script>
+  <script src="js/taller-recorridos.js"></script><script src="js/taller-360.js"></script><script src="js/taller.js"></script>
   <script src="js/entregas-config.js"></script><script src="js/entregas.js"></script>
 </body>
 </html>

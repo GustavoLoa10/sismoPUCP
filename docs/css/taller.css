@@ -130,3 +130,22 @@ body.taller{height:auto;overflow:auto;background:#edf2f5;color:#213744;font:15px
 @media print{.taller-main>.ruta-taller{display:none}.taller #expediente{position:static;max-height:none}}
 
 .entrega-alumnos{display:block}.entrega-alumnos input{max-width:350px;margin:8px 12px 8px 0}.entrega-alumnos p{margin:12px 0;line-height:1.5}.entrega-alumnos #deliveryStatus{overflow-wrap:anywhere}
+
+/* Identidad y ocho fichas siempre disponibles. */
+.participant-dock{position:sticky;top:0;z-index:40;background:#edf2f5;padding:6px 0 8px;border-bottom:1px solid #d5e1e7;box-shadow:0 8px 15px #173c4912}
+.taller .participant-profile{display:block;margin:0 0 6px;padding:8px 12px;border-radius:10px}
+.participant-profile h2{margin:0 0 5px;font-size:14px}
+.participant-profile .perfil-grid{display:grid;grid-template-columns:minmax(180px,2fr) minmax(110px,.8fr) minmax(140px,1.4fr) minmax(90px,.8fr) auto;align-items:end;gap:10px}
+.participant-profile label{display:grid;gap:3px;font-size:12px;min-width:0}
+.taller .participant-profile input{height:36px;padding:6px 9px;font-size:14px;min-width:0}
+.taller .participant-profile button{min-height:36px;padding:6px 10px;margin:0;font-size:12px;white-space:nowrap}
+#profileStatus{display:block;font-size:11px;margin:3px 0 0;color:#436471;line-height:1.3;min-height:15px}
+.profile-incomplete #profileStatus{color:#8a4b0c}.profile-incomplete .participant-profile{border-color:#d6ad5a}
+.participant-route{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin:0;padding:6px 8px;background:#fff;border:1px solid #cfdee5;border-radius:10px}
+.participant-route .casos-chips{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;overflow:visible;padding:2px}
+.taller .participant-route .caso-chip{width:100%;min-width:0;min-height:32px;height:32px;margin:0;padding:3px;line-height:1;font-size:12px}
+.taller .participant-route #btnResumen{font-size:12px;min-height:32px;padding:5px 10px}
+.paso-ficha,.validation-dano,.taller-resumen{scroll-margin-top:calc(var(--dock-height,170px) + 12px)}
+@media(min-width:851px){.taller #expediente{top:calc(var(--dock-height,170px) + 12px);max-height:calc(100dvh - var(--dock-height,170px) - 24px)}}
+@media(max-width:850px){.participant-profile .perfil-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 8px}.participant-profile h2{font-size:13px}.taller .participant-profile input{height:31px;font-size:13px}.participant-profile label{font-size:11px}.taller .participant-profile button{min-height:29px;justify-self:start}.participant-route .casos-chips{gap:3px}.taller .participant-route #btnResumen{padding:5px;font-size:11px}.participant-route{gap:4px;padding:4px}.participant-dock{padding-top:3px}.taller #expediente{position:static;max-height:none}}
+@media print{.participant-dock{position:static}}
