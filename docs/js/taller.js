@@ -85,7 +85,11 @@ function showSelected(){
  const c=casoActivo(),f=S.features.find(f=>f.properties.key===S.selected),panel=document.querySelector('.taller-form');
  panel?.classList.remove('readonly');
  if(!S.draft||S.draft.buildingKey!==S.selected){S.draft=Storage.loadDraft(S.selected)||newDraft(f);if(!S.draft.evaluador&&S.perfil.nombre)S.draft.evaluador=S.perfil.nombre;if(!S.draft.eventoId||S.draft.eventoId==='SIM-01')S.draft.eventoId=c.eventoId;}
- S.draft.eventoId=c.eventoId;S.draft.tipo='rapida';for(const [rubro,valor] of Object.entries(S.draft.danos||{})){if(['leve','moderado','severo','parcial','total','si'].includes(valor)&&!S.draft.registros.some(r=>r.rubro===rubro))S.draft.registros.push({...nuevoRegistroDano(),rubro,severidad:['leve','moderado','severo'].includes(valor)?valor:''});}
+ S.draft.eventoId=c.eventoId;S.draft.tipo='rapida';
+ // Retirar únicamente los espacios automáticos vacíos de versiones anteriores.
+ const registrosPrevios=S.draft.registros;
+ S.draft.registros=registrosPrevios.filter(r=>r.creadoManualmente||['elemento','ubicacion','patron','medicion','mecanismo','evidencia'].some(k=>String(r[k]||'').trim()));
+ if(S.draft.registros.length!==registrosPrevios.length)saveDraftDebounced();
  id('sel').innerHTML=danoFormHTML(f);wireDanoForm(f);
 }
 function indiceCaso(){return casosBanco().findIndex(c=>'TALLER-'+c.id===S.selected)}

@@ -41,3 +41,9 @@ El código de sesión es público y permite enviar: no autentica la identidad de
 Ejecutar supabase/limitar-un-envio-por-codigo.sql en el SQL Editor para activar el límite de servidor. Se reserva atómicamente un envío por Código PUCP normalizado y sesión; también cuenta los códigos de entregas anteriores. Los reintentos con el mismo ID y contenido devuelven el mismo comprobante. Las respuestas existentes se conservan. El navegador advierte que no se podrán añadir ni modificar fichas después del envío y guarda el comprobante por código y sesión.
 
 El panel incluye barras de decisiones y participación, mapa de grados por caso, coincidencia de decisiones, incertidumbre por rubro, distribuciones de sistemas e irregularidades y exploración anónima de fundamentos. La cobertura usa como denominador solo a los participantes con entregas, no el padrón de inscritos. No se agregan datos de demostración a la base ni al sitio.
+
+## Pruebas docentes
+
+Ejecutar supabase/activar-borrado-pruebas.sql para habilitar el borrado autenticado de una entrega de prueba y la comprobación del recibo. Borrar prueba elimina exclusivamente la entrega elegida por ID, pide confirmación y libera el código solo si no quedan otras entregas del mismo código y sesión. Ninguna entrega se borra al instalar la migración.
+
+Las descripciones de daños son opcionales en el taller y solo se crean mediante el botón. Los espacios automáticos vacíos antiguos se retiran; el texto ya escrito se conserva.

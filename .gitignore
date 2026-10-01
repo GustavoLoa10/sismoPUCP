@@ -9,3 +9,4 @@
 !/supabase/autorizar-docente.sql
 
 !/supabase/limitar-un-envio-por-codigo.sql
+!/supabase/activar-borrado-pruebas.sql

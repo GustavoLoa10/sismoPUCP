@@ -12,8 +12,8 @@ async function cargarEntregas(){const revision=++revisionLista,filtro=q('session
  while(continuar){const rows=await api('/rest/v1/taller_entregas?select=id,recibida_en,participante,respuestas,sesion_id&order=recibida_en.desc,id.desc&limit=100&offset='+inicio+(filtro?'&sesion_id=eq.'+encodeURIComponent(filtro):''));if(revision!==revisionLista)return;nuevas.push(...rows);inicio+=rows.length;continuar=rows.length===100;}
  entregas=nuevas;offset=inicio;hasMore=false;q('more').hidden=true;pintar();estadisticasHTML(entregas);q('statistics').hidden=false;teacherMsg('Entregas y estadísticas actualizadas.');
 }
-function pintar(){q('teacherCount').textContent=entregas.length+' entregas cargadas';q('deliveries').innerHTML=entregas.map((r,i)=>'<tr><td>'+safe(new Date(r.recibida_en).toLocaleString('es-PE',{timeZone:'America/Lima'}))+'</td><td>'+safe(r.participante.nombre)+'</td><td>'+safe(r.participante.codigoPUCP||'—')+'</td><td>'+safe(r.participante.institucion)+'</td><td>'+safe(r.participante.equipo)+'</td><td>'+r.respuestas.length+'/'+CATALOGO_TALLER.length+'</td><td><button data-detail="'+i+'">Ver respuestas</button></td></tr>').join('')}
-q('deliveries').onclick=e=>{const b=e.target.closest('[data-detail]');if(b){q('detail').hidden=false;q('detailText').textContent=JSON.stringify(entregas[Number(b.dataset.detail)],null,2);q('detail').scrollIntoView({behavior:'smooth'})}};
+function pintar(){q('teacherCount').textContent=entregas.length+' entregas cargadas';q('deliveries').innerHTML=entregas.map((r,i)=>'<tr><td>'+safe(new Date(r.recibida_en).toLocaleString('es-PE',{timeZone:'America/Lima'}))+'</td><td>'+safe(r.participante.nombre)+'</td><td>'+safe(r.participante.codigoPUCP||'—')+'</td><td>'+safe(r.participante.institucion)+'</td><td>'+safe(r.participante.equipo)+'</td><td>'+r.respuestas.length+'/'+CATALOGO_TALLER.length+'</td><td><button data-detail="'+i+'">Ver respuestas</button> <button class="delete-trial" data-delete-trial="'+i+'">Borrar prueba</button></td></tr>').join('')}
+q('deliveries').onclick=e=>{const borrar=e.target.closest('[data-delete-trial]');if(borrar){confirmarBorradoPrueba(entregas[Number(borrar.dataset.deleteTrial)]);return;}const b=e.target.closest('[data-detail]');if(b){q('detail').hidden=false;q('detailText').textContent=JSON.stringify(entregas[Number(b.dataset.detail)],null,2);q('detail').scrollIntoView({behavior:'smooth'})}};
 q('sessions').onclick=async e=>{const b=e.target.closest('[data-toggle]');if(!b)return;b.disabled=true;try{const s=sesiones.find(x=>x.id===b.dataset.toggle);await api('/rest/v1/taller_sesiones?id=eq.'+encodeURIComponent(s.id),{method:'PATCH',body:JSON.stringify({activa:!s.activa})});await cargarTodo()}catch(err){teacherMsg(err.message)}finally{b.disabled=false}};
 q('reload').onclick=()=>cargarTodo().catch(e=>teacherMsg(e.message));q('more').onclick=()=>cargarEntregas().catch(e=>teacherMsg(e.message));q('sessionFilter').onchange=()=>{offset=0;entregas=[];q('detail').hidden=true;cargarEntregas().catch(e=>teacherMsg(e.message))};
 function csvCell(v){let s=String(v??'');if(/^[=+@\-\t\r]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'}
@@ -23,3 +23,21 @@ q('signOut').onclick=async()=>{try{await api('/auth/v1/logout',{method:'POST'})}
 q('present').onclick=()=>{const active=document.body.classList.toggle('presentation');q('present').textContent=active?'Salir de presentación':'Modo presentación';q('present').setAttribute('aria-pressed',String(active));document.querySelector('.management').open=false;};
 
 q('refreshStats').onclick=()=>cargarTodo().catch(e=>teacherMsg(e.message));
+
+let pruebaPorEliminar=null,borradoEnCurso=false;
+function confirmarBorradoPrueba(row){
+ if(!row||!token||borradoEnCurso)return;pruebaPorEliminar=row;
+ q('deleteTrialSummary').textContent=row.participante.nombre+' · Código PUCP '+(row.participante.codigoPUCP||'sin código')+' · '+row.respuestas.length+' ficha(s) · Comprobante '+row.id;
+ q('deleteTrialDialog').showModal();
+}
+q('cancelDeleteTrial').onclick=()=>q('deleteTrialDialog').close();
+q('acceptDeleteTrial').onclick=async()=>{
+ if(!pruebaPorEliminar||!token||borradoEnCurso)return;const row=pruebaPorEliminar;borradoEnCurso=true;q('acceptDeleteTrial').disabled=true;q('cancelDeleteTrial').disabled=true;
+ try{const result=await api('/rest/v1/rpc/eliminar_entrega_prueba',{method:'POST',body:JSON.stringify({p_entrega_id:row.id})});
+ if(![0,1].includes(result?.eliminadas)||typeof result.reenvio_habilitado!=='boolean')throw Error('El servidor no confirmó el borrado. Actualiza los datos para comprobarlo.');
+ q('deleteTrialDialog').close();pruebaPorEliminar=null;q('detail').hidden=true;q('detailText').textContent='';
+ await cargarTodo();teacherMsg(result.eliminadas===0?'La entrega ya no estaba registrada.':result.reenvio_habilitado?'Entrega de prueba eliminada. El código puede enviar otra vez en esta sesión.':'Entrega de prueba eliminada. Otra entrega de ese código permanece registrada; el reenvío sigue limitado.');
+ }catch(err){q('deleteTrialError').textContent=err.code==='PGRST202'?'Falta activar esta función en Supabase. Ejecuta activar-borrado-pruebas.sql en SQL Editor. No se eliminó ninguna entrega.':err.message;}
+ finally{borradoEnCurso=false;q('acceptDeleteTrial').disabled=false;q('cancelDeleteTrial').disabled=false;}
+};
+q('deleteTrialDialog').addEventListener('close',()=>{pruebaPorEliminar=null;q('deleteTrialError').textContent='';});

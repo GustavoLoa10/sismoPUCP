@@ -95,6 +95,45 @@ end;
 $$;
 revoke all on function public.enviar_taller(uuid,text,jsonb,jsonb) from public,anon,authenticated;
 grant execute on function public.enviar_taller(uuid,text,jsonb,jsonb) to anon,authenticated;
+
+-- Borrar exclusivamente una entrega elegida; solo para docentes autorizados.
+create or replace function public.eliminar_entrega_prueba(p_entrega_id uuid)
+returns jsonb language plpgsql security definer set search_path='' as $$
+declare v_fila public.taller_entregas%rowtype; v_codigo text; v_n integer; v_liberado boolean=false;
+begin
+ if not exists(select 1 from public.taller_docentes where user_id=(select auth.uid())) then
+  raise exception using errcode='42501',message='Solo un docente autorizado puede eliminar una entrega de prueba';
+ end if;
+ select * into v_fila from public.taller_entregas where id=p_entrega_id;
+ if not found then return jsonb_build_object('eliminadas',0,'reenvio_habilitado',false); end if;
+ v_codigo=upper(btrim(v_fila.participante->>'codigoPUCP'));
+ if coalesce(v_codigo,'')<>'' then
+  perform pg_advisory_xact_lock(hashtextextended(v_fila.sesion_id::text||':'||v_codigo,0));
+  perform 1 from public.taller_codigos_enviados where sesion_id=v_fila.sesion_id and codigo_pucp=v_codigo for update;
+ end if;
+ delete from public.taller_entregas where id=p_entrega_id;
+ get diagnostics v_n=row_count;
+ if v_n=1 and coalesce(v_codigo,'')<>'' and not exists(select 1 from public.taller_entregas where sesion_id=v_fila.sesion_id and upper(btrim(participante->>'codigoPUCP'))=v_codigo) then
+  delete from public.taller_codigos_enviados where sesion_id=v_fila.sesion_id and codigo_pucp=v_codigo;
+  v_liberado=true;
+ end if;
+ return jsonb_build_object('eliminadas',v_n,'reenvio_habilitado',v_liberado);
+end;
+$$;
+revoke all on function public.eliminar_entrega_prueba(uuid) from public,anon,authenticated;
+grant execute on function public.eliminar_entrega_prueba(uuid) to authenticated;
+
+-- Verificar un comprobante no devuelve datos personales ni respuestas.
+create or replace function public.comprobar_recibo_taller(p_id uuid,p_codigo text)
+returns jsonb language plpgsql security definer set search_path='' as $$
+begin
+ if p_id is null or p_codigo is null or char_length(p_codigo)>40 then raise exception 'Comprobante inválido'; end if;
+ return jsonb_build_object('registrada',exists(select 1 from public.taller_entregas e join public.taller_sesiones s on s.id=e.sesion_id where e.id=p_id and s.codigo=p_codigo));
+end;
+$$;
+revoke all on function public.comprobar_recibo_taller(uuid,text) from public,anon,authenticated;
+grant execute on function public.comprobar_recibo_taller(uuid,text) to anon,authenticated;
+
 insert into public.taller_sesiones(nombre,codigo) select 'Taller sismoPUCP',upper(substr(replace(gen_random_uuid()::text,'-',''),1,10)) where not exists(select 1 from public.taller_sesiones);
 commit;
 -- Guarda este código y compártelo con los alumnos del taller.

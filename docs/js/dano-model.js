@@ -18,14 +18,15 @@ function validarDano(d){
   if(pendientes.length)errores.push('Completa los '+pendientes.length+' rubros pendientes; usa No determinado cuando la información disponible no permita decidir.');
   if((d.alcance==='exterior'||Object.values(d.danos||{}).some(v=>['no_inspeccionado','no_determinado'].includes(v)))&&!texto(d.limitaciones))errores.push('Explica las zonas no inspeccionadas o la información que falta.');
   const positivos=['leve','moderado','severo','parcial','total','si'];
-  for(const [k,label] of items)if(positivos.includes((d.danos||{})[k])&&!(d.registros||[]).some(r=>r.rubro===k))errores.push('Añade un registro que documente: '+label+'.');
+  for(const [k,label] of items)if(!globalThis.SISMO_TALLER&&positivos.includes((d.danos||{})[k])&&!(d.registros||[]).some(r=>r.rubro===k))errores.push('Añade un registro que documente: '+label+'.');
   for(const [i,r] of (d.registros||[]).entries()){
+    if(globalThis.SISMO_TALLER)continue;
     if(!DANO_IDS.includes(r.rubro)||![r.elemento,r.ubicacion,r.patron,r.mecanismo,r.evidencia].every(texto)||!['leve','moderado','severo'].includes(r.severidad))errores.push('Completa el registro '+(i+1)+': rubro, elemento, ubicación, patrón, mecanismo o incertidumbre, severidad y evidencia.');
     if(['ninguno','no','no_aplica','no_inspeccionado'].includes((d.danos||{})[r.rubro]))errores.push('El registro '+(i+1)+' contradice el resumen de su rubro.');
     const orden={leve:1,moderado:2,severo:3};
     if(orden[(d.danos||{})[r.rubro]]<orden[r.severidad])errores.push('La severidad del registro '+(i+1)+' supera la indicada en el resumen.');
   }
-  if(['uso_restringido','inseguro'].includes(d.habitabilidad)&&!texto(d.restricciones))errores.push('Especifica las áreas, accesos o usos restringidos.');
+  if(!globalThis.SISMO_TALLER&&['uso_restringido','inseguro'].includes(d.habitabilidad)&&!texto(d.restricciones))errores.push('Especifica las áreas, accesos o usos restringidos.');
   if(d.tipo==='detallada'&&(!texto(d.metodo_detallado)||!d.registros?.length))errores.push('La evaluación detallada requiere registros por elemento y descripción del método y comprobaciones.');
   if(d.habitabilidad==='habitable'&&((d.registros||[]).some(r=>r.severidad==='severo')||Object.values(d.danos||{}).some(v=>['moderado','severo','parcial','total','si'].includes(v))||['30_60','60_100','100','grado_3','grado_4','grado_5'].includes(d.pct_dano)))avisos.push('La decisión favorable requiere revisión: se han registrado daños o peligros relevantes.');
   if(d.habitabilidad==='habitable'&&(d.alcance==='exterior'||Object.values(d.danos||{}).some(v=>['no_inspeccionado','no_determinado'].includes(v))))avisos.push('La decisión favorable tiene limitaciones de inspección que deben justificarse.');

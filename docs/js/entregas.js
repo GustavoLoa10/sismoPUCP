@@ -28,8 +28,7 @@ async function enviarEntrega(){
   const codigo=ENTREGAS_CONFIG.sessionCode;if(!codigo)throw Error('No está configurado el taller de destino.');
   const data=await prepararEntrega();
   const reciboKey='sismoPUCP_entrega_unica:'+codigo+':'+data.participante.codigoPUCP;
-  const reciboPrevio=localStorage.getItem(reciboKey);
-  if(reciboPrevio)throw Error('Este Código PUCP ya tiene una entrega confirmada en esta sesión. Solo se permite un envío.');
+  await comprobarReciboAnterior(reciboKey,codigo);
   if(!await confirmarEntrega(data))return;
   const contenido=JSON.stringify({codigo,...data}),huella=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(contenido)))).map(x=>x.toString(16).padStart(2,'0')).join('');
   let anterior;try{anterior=JSON.parse(localStorage.getItem('sismoPUCP_ultima_entrega'))}catch{}
@@ -53,4 +52,18 @@ try{const r=JSON.parse(localStorage.getItem('sismoPUCP_recibo'));if(r)mensajeEnt
 function confirmarEntrega(data){
  const dialog=id('confirmDelivery');id('confirmDeliverySummary').textContent=data.participante.nombre+' · Código PUCP '+data.participante.codigoPUCP+' · '+data.respuestas.length+' de '+TALLER_PRACTICAS.length+' fichas finalizadas. Solo se permite un envío por Código PUCP en esta sesión; después no podrás añadir ni modificar fichas.';
  return new Promise(resolve=>{let aceptar=false;const cerrar=()=>{dialog.removeEventListener('close',cerrar);resolve(aceptar)};dialog.addEventListener('close',cerrar);id('cancelDelivery').onclick=()=>dialog.close();id('acceptDelivery').onclick=()=>{aceptar=true;dialog.close()};dialog.showModal()});
+}
+
+async function comprobarReciboAnterior(reciboKey,codigo){
+ const guardado=localStorage.getItem(reciboKey);if(!guardado)return;
+ let recibo;try{recibo=JSON.parse(guardado)}catch{throw Error('No se pudo leer el comprobante anterior. Solicita revisión al docente.');}
+ mensajeEntrega('Comprobando la entrega anterior…');
+ const response=await fetch(ENTREGAS_CONFIG.url+'/rest/v1/rpc/comprobar_recibo_taller',{method:'POST',headers:{apikey:ENTREGAS_CONFIG.key,'Content-Type':'application/json'},body:JSON.stringify({p_id:recibo.id,p_codigo:codigo}),signal:AbortSignal.timeout(25000)});
+ const result=await response.json();
+ if(!response.ok)throw Error(result.code==='PGRST202'?'Falta activar el borrado de pruebas en Supabase. El docente debe ejecutar activar-borrado-pruebas.sql.':result.message||'No se pudo comprobar la entrega anterior.');
+ if(typeof result.registrada!=='boolean')throw Error('El servidor no confirmó la vigencia del comprobante.');
+ if(result.registrada)throw Error('Este Código PUCP ya tiene una entrega confirmada en esta sesión. Solo se permite un envío.');
+ localStorage.removeItem(reciboKey);
+ for(const key of ['sismoPUCP_recibo','sismoPUCP_ultima_entrega']){try{if(JSON.parse(localStorage.getItem(key)||'null')?.id===recibo.id)localStorage.removeItem(key)}catch{}}
+ mensajeEntrega('El comprobante anterior fue eliminado. Se verificará la disponibilidad del código al enviar.');
 }

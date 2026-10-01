@@ -47,8 +47,8 @@ function danoFormHTML(f,datos=S.draft){
   <div class="field-inline"><label for="ev_irregularidad_estructural">Irregularidad estructural</label><select id="ev_irregularidad_estructural">${opts([['','— Seleccione —'],...IRREGULARIDADES_ESTRUCTURALES.map(v=>[v,v])],d.irregularidad_estructural)}</select></div>
   ${danoInput('limitaciones','Zonas no inspeccionadas, peligros de acceso e información faltante',d.limitaciones,true)}
   <h3>3 · Observar los daños</h3>${danoLegendHTML()}<div id="danoGrupos">${grupos}</div>
-  <h3>4 · Documentar e interpretar</h3>
-  <div id="registrosDano"></div><button id="btnAddRegistro" type="button" hidden>+ Añadir daño por elemento</button>
+  <h3>4 · Descripción del daño (opcional)</h3>
+  <div id="registrosDano"></div><button id="btnAddRegistro" type="button">+ Añadir descripción de daño</button>
   <details class="metodo-opcional"><summary>Método y comprobaciones adicionales (opcional)</summary>${danoInput('metodo_detallado','Descripción del método',d.metodo_detallado,true)}</details>
   <div class="foto-carga"><label for="fotoInput">Fotografías</label><input id="fotoInput" type="file" accept="image/*" capture="environment" multiple></div><div id="photoStatus" role="status"></div><div class="evidence-photos" id="fotoThumbs"></div>
   ${danoInput('obs','Observaciones adicionales',d.observaciones,true)}
@@ -86,8 +86,8 @@ function wireDanoForm(f){
   for(const [key,prop] of [['evento','eventoId'],['pct','pct_dano'],['detallada','eval_detallada'],['acciones','acciones_otras'],['obs','observaciones']])bind(key,prop);
   wireGuiaGrados();
   id('habGrid').onclick=e=>{if(PANCARTA_GRADO[S.draft.pct_dano])return;const b=e.target.closest('.habbtn');if(!b)return;S.draft.habitabilidad=b.dataset.v;for(const x of id('habGrid').children){x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))}saveDraftDebounced()};
-  id('danoGrupos').onclick=e=>{const b=e.target.closest('.dano-estado');if(!b)return;S.draft.danos[b.dataset.rubro]=b.dataset.v;if(['leve','moderado','severo','parcial','total','si'].includes(b.dataset.v)&&!S.draft.registros.some(r=>r.rubro===b.dataset.rubro)){S.draft.registros.push({...nuevoRegistroDano(),rubro:b.dataset.rubro,severidad:['leve','moderado','severo'].includes(b.dataset.v)?b.dataset.v:''});renderRegistrosDano();}for(const x of b.parentElement.children){const active=x===b;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))}saveDraftDebounced()};
-  id('btnAddRegistro').onclick=()=>{S.draft.registros.push(nuevoRegistroDano());renderRegistrosDano();saveDraftDebounced()};
+  id('danoGrupos').onclick=e=>{const b=e.target.closest('.dano-estado');if(!b)return;S.draft.danos[b.dataset.rubro]=b.dataset.v;if(!globalThis.SISMO_TALLER&&['leve','moderado','severo','parcial','total','si'].includes(b.dataset.v)&&!S.draft.registros.some(r=>r.rubro===b.dataset.rubro)){S.draft.registros.push({...nuevoRegistroDano(),rubro:b.dataset.rubro,severidad:['leve','moderado','severo'].includes(b.dataset.v)?b.dataset.v:''});renderRegistrosDano();}for(const x of b.parentElement.children){const active=x===b;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))}saveDraftDebounced()};
+  id('btnAddRegistro').onclick=()=>{S.draft.registros.push({...nuevoRegistroDano(),creadoManualmente:true});renderRegistrosDano();saveDraftDebounced()};
   renderRegistrosDano();renderFotoThumbs();id('coherenceField').hidden=!validarDano(S.draft).avisos.length;
   id('fotoInput').onchange=async e=>{
     const d=S.draft,files=[...e.target.files];d._photosLoading=(d._photosLoading||0)+files.length;
@@ -157,6 +157,8 @@ async function revisarEval(buildingKey,evUuid,comentario){
 }
 
 function registrosDanoHTML(draft){
+  if(globalThis.SISMO_TALLER&&!document.body.hasAttribute('data-example'))return draft.registros.map((r,i)=>`<fieldset class="registro-dano" data-registro="${i}"><legend>Descripción de daño ${i+1}</legend><label for="reg_${i}_rubro">Rubro</label><select id="reg_${i}_rubro" data-prop="rubro">${opts([['','Seleccione'],...DANO_GRUPOS.flatMap(([,a])=>a.map(([k,t])=>[k,t]))],r.rubro)}</select><label for="reg_${i}_patron">Descripción del daño observado</label><textarea rows="3" id="reg_${i}_patron" data-prop="patron">${esc(r.patron)}</textarea><button type="button" data-remove="${i}" class="danger">Quitar descripción</button></fieldset>`).join('');
+
   const campos=[['elemento','Elemento / código'],['ubicacion','Piso, eje o ambiente'],['patron','Patrón y extensión del daño'],['medicion','Medición, unidad e instrumento (o no medida)'],['mecanismo','Mecanismo probable o incertidumbre'],['evidencia','Evidencia: código de foto/croquis o descripción de observación']];
   return draft.registros.map((r,i)=>`<fieldset class="registro-dano" data-registro="${i}"><legend>Daño ${i+1}</legend><label for="reg_${i}_rubro">Rubro</label><select id="reg_${i}_rubro" data-prop="rubro">${opts([['','Seleccione'],...DANO_GRUPOS.flatMap(([,a])=>a.map(([k,t])=>[k,t]))],r.rubro)}</select>${campos.map(([k,t])=>`<label for="reg_${i}_${k}">${t}</label><textarea rows="2" id="reg_${i}_${k}" data-prop="${k}">${esc(r[k])}</textarea>`).join('')}<label for="reg_${i}_severidad">Severidad del daño</label><select id="reg_${i}_severidad" data-prop="severidad">${opts([['','Seleccionar'],['leve','Leve'],['moderado','Moderado'],['severo','Severo']],r.severidad)}</select><button type="button" data-remove="${i}" class="danger">Quitar registro ${i+1}</button></fieldset>`).join('');
 }
