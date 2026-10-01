@@ -103,7 +103,7 @@ function wireDanoForm(f){
     if(review){try{await revisarEval(f.properties.key,review.dataset.revisar);showSelected()}catch(err){alert('No se pudo registrar la revisión: '+err.message)}}
   };
   id('btnSaveEval').onclick=()=>saveEval(f);
-  id('btnCancelEval').onclick=async()=>{if(S.draft._photosLoading){alert('Espere a que terminen las fotografías.');return}if(!confirm('¿Descartar el borrador actual?'))return;try{await Storage.clearDraft(f.properties.key);S.draft=newDraft(f);showSelected()}catch(err){avisoBorrador('No se pudo descartar: '+err.message,true)}};
+  id('btnCancelEval').onclick=async()=>{if(S.draft._photosLoading){alert('Espere a que terminen las fotografías.');return}if(!confirm('¿Descartar el borrador actual?'))return;try{await Storage.clearDraft(f.properties.key);if(globalThis.SISMO_TALLER&&typeof recuperarRespuestaTaller==='function'){S.draft=await recuperarRespuestaTaller(casoActivo(),f)}else{S.draft=newDraft(f)}showSelected()}catch(err){avisoBorrador('No se pudo descartar: '+err.message,true)}};
 }
 function renderFotoThumbs(){
   const box=id('fotoThumbs');if(!box)return;
@@ -136,7 +136,12 @@ async function saveEval(f){
     if(typeof pushEval==='function'&&!rec.training)pushEval(rec);
     if(typeof pushFoto==='function'&&!rec.training)for(const ph of snapshot.fotos)pushFoto(ph.uuid,ph.dataUrl,{buildingKey:rec.buildingKey,evalUuid:rec.uuid});
     if(!rec.training)await registrarActividad(eraEdicion?'evaluacion_actualizada':'evaluacion_creada','evaluacion',rec.uuid,`${rec.local_id||rec.buildingKey} · ${HAB_LABEL[rec.habitabilidad]||'Sin decisión'}`,{buildingKey:rec.buildingKey,evaluador:rec.evaluador||''});
-    if(S.draft===d){S.draft=newDraft(f);showSelected()}
+    if(S.draft===d){
+      if(globalThis.SISMO_TALLER&&typeof avanzarTrasFinalizarTaller==='function'){
+        S.draft=normalizarDano({...rec,fecha:fechaLocalDano(rec.fecha),fotos:snapshot.fotos});
+        await avanzarTrasFinalizarTaller(rec);
+      }else{S.draft=newDraft(f);showSelected()}
+    }
     refresh();if(typeof renderSectoresPanel==='function')renderSectoresPanel();status('Evaluación guardada: '+HAB_LABEL[rec.habitabilidad]+'.');
   }catch(err){box.textContent='No se pudo finalizar. Se conserva el borrador: '+err.message;box.focus()}finally{button.disabled=false;form.inert=false}
 }

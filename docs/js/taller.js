@@ -92,11 +92,23 @@ function showSelected(){
  if(S.draft.registros.length!==registrosPrevios.length)saveDraftDebounced();
  id('sel').innerHTML=danoFormHTML(f);wireDanoForm(f);
 }
+function evaluacionFinalizadaTaller(c){return evalsOf('TALLER-'+c.id).find(e=>e.estadoRegistro!=='anulada'&&e.eventoId===c.eventoId)||null;}
+async function recuperarRespuestaTaller(c,f){
+ const borrador=Storage.loadDraft(f.properties.key);if(borrador)return borrador;
+ const guardada=evaluacionFinalizadaTaller(c);if(!guardada)return newDraft(f);
+ return normalizarDano({...guardada,fecha:fechaLocalDano(guardada.fecha),fotos:await fotosDe(guardada)});
+}
+async function avanzarTrasFinalizarTaller(rec){
+ const casos=casosBanco(),i=casos.findIndex(c=>'TALLER-'+c.id===rec.buildingKey),siguiente=casos[i+1];
+ if(siguiente){id('caseSelect').value=siguiente.id;await seleccionarCaso();document.querySelector('.taller-form').scrollTop=0;document.querySelector('.paso-ficha').scrollIntoView({block:'start',behavior:'instant'});status('Ficha '+etiquetaCasoTaller(casos[i].id)+' guardada. Puedes volver a revisarla desde los números de arriba.');}
+ else{showSelected();refresh();mostrarResumen();id('resumenTaller').hidden=false;status('Ficha guardada. Revisa tus respuestas antes de enviar al equipo docente.');}
+}
+let revisionSeleccionCaso=0;
 function indiceCaso(){return casosBanco().findIndex(c=>'TALLER-'+c.id===S.selected)}
 function renderRuta(){
-  const casos=casosBanco(),completados=BANCO_ACTIVO==='resuelto'?casos.length:casos.filter(c=>latestEval('TALLER-'+c.id)).length,i=indiceCaso();
+  const casos=casosBanco(),completados=BANCO_ACTIVO==='resuelto'?casos.length:casos.filter(c=>evaluacionFinalizadaTaller(c)).length,i=indiceCaso();
   id('progressText').textContent=BANCO_ACTIVO==='resuelto'?`${casos.length} fichas resueltas disponibles`:`${completados} de ${casos.length} prácticas completadas`;
-  id('caseChips').innerHTML=casos.map(c=>{const key='TALLER-'+c.id,completo=!!latestEval(key),borrador=!!Storage.loadDraft(key),resuelto=c.tipo==='resuelto';return `<button type="button" data-caso="${attr(c.id)}" aria-current="${key===S.selected?'true':'false'}" class="caso-chip ${key===S.selected?'active':''} ${resuelto?'resolved':completo?'complete':borrador?'draft':''}" aria-label="${attr(etiquetaCasoTaller(c.id)+(resuelto?', ejemplo resuelto':completo?', completado':borrador?', en borrador':', pendiente'))}" title="${attr(c.titulo)}">${esc(etiquetaCasoTaller(c.id))}<span>${resuelto?'✓':completo?'✓':borrador?'•':''}</span></button>`}).join('');
+  id('caseChips').innerHTML=casos.map(c=>{const key='TALLER-'+c.id,completo=!!evaluacionFinalizadaTaller(c),borrador=!!Storage.loadDraft(key),resuelto=c.tipo==='resuelto';return `<button type="button" data-caso="${attr(c.id)}" aria-current="${key===S.selected?'true':'false'}" class="caso-chip ${key===S.selected?'active':''} ${resuelto?'resolved':completo?'complete':borrador?'draft':''}" aria-label="${attr(etiquetaCasoTaller(c.id)+(resuelto?', ejemplo resuelto':completo?', completado':borrador?', en borrador':', pendiente'))}" title="${attr(c.titulo)}">${esc(etiquetaCasoTaller(c.id))}<span>${resuelto?'✓':completo?'✓':borrador?'•':''}</span></button>`}).join('');
   id('caseChips').onclick=async e=>{const b=e.target.closest('[data-caso]');if(b){id('caseSelect').value=b.dataset.caso;await seleccionarCaso();document.querySelector('.paso-ficha').scrollIntoView({block:'start',behavior:'instant'})}};
   const chips=id('caseChips'),activo=chips.querySelector('.active');if(activo){const a=activo.getBoundingClientRect(),r=chips.getBoundingClientRect();if(a.left<r.left)chips.scrollLeft+=a.left-r.left-4;else if(a.right>r.right)chips.scrollLeft+=a.right-r.right+4;}
   id('btnPrev').disabled=i<=0;id('btnNext').disabled=i<0||i>=casos.length-1;
@@ -104,7 +116,7 @@ function renderRuta(){
 }
 function navegarCaso(paso){const casos=casosBanco(),i=indiceCaso()+paso;if(i<0||i>=casos.length)return;id('caseSelect').value=casos[i].id;seleccionarCaso();scrollTo({top:0,behavior:'smooth'})}
 function mostrarResumen(){
- const filas=TALLER_PRACTICAS.map(c=>({c,ev:evalsOf('TALLER-'+c.id).find(e=>e.estadoRegistro!=='anulada')})),finalizadas=filas.filter(x=>x.ev),conteo={habitable:0,uso_restringido:0,inseguro:0};
+ const filas=TALLER_PRACTICAS.map(c=>({c,ev:evaluacionFinalizadaTaller(c)})),finalizadas=filas.filter(x=>x.ev),conteo={habitable:0,uso_restringido:0,inseguro:0};
  finalizadas.forEach(x=>{if(x.ev.habitabilidad in conteo)conteo[x.ev.habitabilidad]++});
  id('resumenTaller').innerHTML='<p class="resumen-eyebrow">CIERRE DEL TALLER · TU RECORRIDO</p><h2>Observar, interpretar y fundamentar</h2><p>'+esc(S.perfil.nombre||'Tu resumen personal')+' · Revisa tus decisiones y los fundamentos que registraste en las 12 prácticas.</p><div class="resumen-metrics"><div><strong>'+finalizadas.length+' / '+TALLER_PRACTICAS.length+'</strong><span>Fichas finalizadas</span></div>'+Object.entries(conteo).map(([k,n])=>'<div><strong>'+n+'</strong><span>'+esc(HAB_LABEL[k])+'</span></div>').join('')+'</div><div class="resumen-casos">'+filas.map(({c,ev})=>'<article><div class="resumen-case-heading"><span>'+esc(etiquetaCasoTaller(c.id))+'</span><b>'+esc(ev?HAB_LABEL[ev.habitabilidad]:Storage.loadDraft('TALLER-'+c.id)?'Borrador':'Pendiente')+'</b></div><h3>'+esc(c.titulo)+'</h3>'+(ev?'<p><strong>Tu fundamento</strong><br>'+esc(ev.fundamento||'Sin fundamento registrado.')+'</p>'+(ev.limitaciones?'<p><strong>Límites de tu evaluación</strong><br>'+esc(ev.limitaciones)+'</p>':''):'<p>Completa y finaliza esta ficha para incorporarla al resumen.</p>')+'</article>').join('')+'</div><div class="resumen-reflexion"><h3>De la respuesta al criterio</h3><p>Elige una de tus decisiones: ¿qué evidencia fue decisiva?, ¿qué información te faltó?, ¿qué revisarías después de la discusión con el equipo docente?</p><small>Este resumen reúne tus registros en este dispositivo. La cantidad de fichas finalizadas indica avance; las decisiones no constituyen una calificación automática.</small></div>';
 }
@@ -133,11 +145,15 @@ async function cambiarBanco(){
  id('resumenTaller').hidden=true;await seleccionarCaso();
 }
 async function seleccionarCaso(){
+  const revision=++revisionSeleccionCaso,casoId=id('caseSelect').value;
+  await Storage._draftQueue.catch(()=>{});if(revision!==revisionSeleccionCaso)return;
   pararRecorridoTaller();
-  const c=TALLER_CASOS.find(c=>c.id===id('caseSelect').value);if(!c)return;S.selected='TALLER-'+c.id;S.eventoId=c.eventoId;
+  const c=TALLER_CASOS.find(c=>c.id===casoId);if(!c)return;const key='TALLER-'+c.id,f=S.features.find(f=>f.properties.key===key);
+  const draft=S.draft?.buildingKey===key?S.draft:await recuperarRespuestaTaller(c,f);
+  if(revision!==revisionSeleccionCaso)return;S.selected=key;S.eventoId=c.eventoId;S.draft=draft;
   id('expediente').innerHTML=`<header class="expediente-cabecera"><p class="eyebrow">${esc(etiquetaCasoTaller(c.id))} · ${esc(c.nivel)}</p><h2>${esc(c.titulo)}</h2><p class="expediente-meta"><b>${esc(c.evento)}</b><span>${esc(c.ubicacion)}</span></p></header>${evidenciaVisualTaller(c)}${recorridoHTMLTaller(c)}${detallesExpedienteTaller(c)}`;
   const resuelto=c.tipo==='resuelto';document.querySelector('.taller-solution')?.classList.toggle('resolved-mode',resuelto);
-  wireGaleriaTaller(c);wireRecorridoTaller(c);await renderGaleriaTaller(c);showSelected();renderRuta();status(resuelto?`Ejemplo ${c.id} listo: ficha documental completa y exportable.`:`Práctica ${etiquetaCasoTaller(c.id)} lista. El borrador se guarda automáticamente en este dispositivo.`);
+  wireGaleriaTaller(c);wireRecorridoTaller(c);await renderGaleriaTaller(c);if(revision!==revisionSeleccionCaso)return;showSelected();renderRuta();status(resuelto?`Ejemplo ${c.id} listo: ficha documental completa y exportable.`:`Práctica ${etiquetaCasoTaller(c.id)} lista. El borrador se guarda automáticamente en este dispositivo.`);
 }
 function tablaFichaTaller(ev){
   return `<table>${repFila('Evaluador',ev.evaluador)}${repFila('CIP / referencia',ev.cip||'N/D')}${repFila('Evento',S.eventos.find(e=>e.uuid===ev.eventoId)?.nombre||ev.eventoId||'N/D')}${repFila('Fecha',fmtFecha(ev.fecha))}${repFila('Tipo',ev.tipo)}${repFila('Alcance',ev.alcance==='exterior'?'Solo exterior':'Exterior e interior')}${repFila('Sistema y fuente',ev.sistema_observado)}${repFila('Limitaciones',ev.limitaciones)}${repFila('Decisión',HAB_LABEL[ev.habitabilidad]||'Pendiente')}${repFila('Fundamento',ev.fundamento)}${repFila('Restricciones',ev.restricciones)}${repFila('Daño global',PCT_LABEL[ev.pct_dano]||'Sin estimar')}${repFila('Barricada',ev.barricada?'Sí':'No')}${repFila('Evaluación detallada',ev.eval_detallada?'Sí':'No')}${repFila('Método',ev.metodo_detallado)}${repFila('Medidas y seguimiento',ev.acciones_otras)}${repFila('Revisión de alertas',ev.justificacion_alertas)}${repFila('Observaciones',ev.observaciones)}</table><h3>Resumen por rubro</h3><table>${DANO_GRUPOS.flatMap(([,a])=>a).map(([k,t])=>repFila(t,sevTitle(ev.danos?.[k]||'Pendiente'))).join('')}</table>${reporteRegistrosDano(ev)}`;
